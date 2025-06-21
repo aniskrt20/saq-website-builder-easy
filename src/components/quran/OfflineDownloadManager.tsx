@@ -14,7 +14,9 @@ import {
   WifiOff,
   RefreshCw,
   Database,
-  Check
+  Check,
+  X,
+  Loader2
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { offlineStorageService } from "@/services/offline-storage-service";
@@ -44,13 +46,20 @@ const OfflineDownloadManager: React.FC<OfflineDownloadManagerProps> = ({
   const [storageInfo, setStorageInfo] = useState({ used: 0, quota: 0 });
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [isValidating, setIsValidating] = useState(false);
+  const [downloadStartTime, setDownloadStartTime] = useState<number | null>(null);
   
   const { data: chaptersData, isLoading } = useQuranApiChapters();
   const { toast } = useToast();
 
   useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
+    const handleOnline = () => {
+      setIsOnline(true);
+      console.log('الجهاز متصل بالإنترنت');
+    };
+    const handleOffline = () => {
+      setIsOnline(false);
+      console.log('الجهاز غير متصل بالإنترنت');
+    };
     
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
@@ -169,19 +178,25 @@ const OfflineDownloadManager: React.FC<OfflineDownloadManagerProps> = ({
 
     setIsDownloading(true);
     setOverallProgress(0);
+    setDownloadStartTime(Date.now());
 
     try {
+      console.log(`بدء تحميل ${selectedChapters.length} سورة`);
+      
       await offlineStorageService.downloadMultipleChapters(
         selectedChapters,
         (overall, current) => {
+          console.log(`التقدم الإجمالي: ${overall}%، السورة الحالية: ${current.chapterName} - ${current.progress}%`);
           setOverallProgress(overall);
           setDownloadProgress(current);
         }
       );
 
+      const downloadTime = downloadStartTime ? ((Date.now() - downloadStartTime) / 1000).toFixed(1) : '0';
+      
       toast({
-        title: "تم التحميل بنجاح",
-        description: `تم تحميل ${selectedChapters.length} سورة للاستخدام بدون اتصال`,
+        title: "تم التحميل بنجاح ✅",
+        description: `تم تحميل ${selectedChapters.length} سورة في ${downloadTime} ثانية`,
       });
 
       setSelectedChapters([]);
@@ -191,14 +206,15 @@ const OfflineDownloadManager: React.FC<OfflineDownloadManagerProps> = ({
     } catch (error) {
       console.error('خطأ في التحميل:', error);
       toast({
-        title: "خطأ في التحميل",
-        description: "حدث خطأ أثناء تحميل السور. يرجى المحاولة مرة أخرى.",
+        title: "خطأ في التحميل ❌",
+        description: "حدث خطأ أثناء تحميل السور. تحقق من الاتصال وحاول مرة أخرى.",
         variant: "destructive"
       });
     } finally {
       setIsDownloading(false);
       setDownloadProgress(null);
       setOverallProgress(0);
+      setDownloadStartTime(null);
     }
   };
 
@@ -265,9 +281,9 @@ const OfflineDownloadManager: React.FC<OfflineDownloadManagerProps> = ({
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* معلومات الحالة */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card>
+          {/* معلومات الحالة المحسنة */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Card className={`transition-all duration-300 ${isOnline ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
               <CardContent className="p-4 text-center">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   {isOnline ? (
@@ -314,31 +330,45 @@ const OfflineDownloadManager: React.FC<OfflineDownloadManagerProps> = ({
             </Card>
           </div>
 
-          {/* شريط التحميل */}
+          {/* شريط التحميل المحسن */}
           {isDownloading && (
-            <Card>
-              <CardContent className="p-4">
-                <div className="space-y-3">
+            <Card className="border-blue-200 bg-blue-50">
+              <CardContent className="p-6">
+                <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">التقدم الإجمالي</span>
-                    <span className="text-sm text-gray-600">{overallProgress}%</span>
+                    <div className="flex items-center gap-3">
+                      <Loader2 className="animate-spin text-blue-500" size={20} />
+                      <span className="text-lg font-medium">جاري التحميل...</span>
+                    </div>
+                    <span className="text-lg font-bold text-blue-600">{overallProgress}%</span>
                   </div>
-                  <Progress value={overallProgress} className="w-full" />
+                  
+                  <Progress value={overallProgress} className="w-full h-3" />
                   
                   {downloadProgress && (
-                    <div className="flex items-center gap-2 text-sm">
-                      {downloadProgress.status === 'downloading' && (
-                        <RefreshCw className="animate-spin" size={16} />
-                      )}
-                      {downloadProgress.status === 'completed' && (
-                        <CheckCircle className="text-green-500" size={16} />
-                      )}
-                      {downloadProgress.status === 'error' && (
-                        <AlertCircle className="text-red-500" size={16} />
-                      )}
-                      <span>
-                        {downloadProgress.chapterName} - {downloadProgress.progress}%
-                      </span>
+                    <div className="bg-white rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-medium">{downloadProgress.chapterName}</span>
+                        <div className="flex items-center gap-2">
+                          {downloadProgress.status === 'downloading' && (
+                            <Loader2 className="animate-spin text-blue-500" size={16} />
+                          )}
+                          {downloadProgress.status === 'completed' && (
+                            <CheckCircle className="text-green-500" size={16} />
+                          )}
+                          {downloadProgress.status === 'error' && (
+                            <X className="text-red-500" size={16} />
+                          )}
+                          <span className="text-sm font-medium">{downloadProgress.progress}%</span>
+                        </div>
+                      </div>
+                      <Progress value={downloadProgress.progress} className="w-full h-2" />
+                    </div>
+                  )}
+                  
+                  {downloadStartTime && (
+                    <div className="text-sm text-gray-600 text-center">
+                      الزمن المنقضي: {((Date.now() - downloadStartTime) / 1000).toFixed(1)} ثانية
                     </div>
                   )}
                 </div>
@@ -352,6 +382,7 @@ const OfflineDownloadManager: React.FC<OfflineDownloadManagerProps> = ({
               onClick={handleSelectAll}
               variant="outline"
               disabled={isDownloading || undownloadedChapters.length === 0}
+              className="flex-1 sm:flex-none"
             >
               {selectedChapters.length === undownloadedChapters.length ? "إلغاء تحديد الكل" : "تحديد الكل"}
             </Button>
@@ -359,10 +390,14 @@ const OfflineDownloadManager: React.FC<OfflineDownloadManagerProps> = ({
             <Button
               onClick={handleDownload}
               disabled={isDownloading || selectedChapters.length === 0 || !isOnline}
-              className="bg-blue-500 hover:bg-blue-600"
+              className="bg-blue-500 hover:bg-blue-600 flex-1 sm:flex-none"
             >
-              <Download size={16} className="ml-2" />
-              تحميل السور المختارة ({selectedChapters.length})
+              {isDownloading ? (
+                <Loader2 size={16} className="ml-2 animate-spin" />
+              ) : (
+                <Download size={16} className="ml-2" />
+              )}
+              {isDownloading ? 'جاري التحميل...' : `تحميل (${selectedChapters.length})`}
             </Button>
             
             <Button
@@ -371,7 +406,7 @@ const OfflineDownloadManager: React.FC<OfflineDownloadManagerProps> = ({
               disabled={isDownloading}
             >
               <RefreshCw size={16} className="ml-2" />
-              تحديث القائمة
+              تحديث
             </Button>
             
             <Button
@@ -380,7 +415,7 @@ const OfflineDownloadManager: React.FC<OfflineDownloadManagerProps> = ({
               disabled={isDownloading || downloadedChapters.length === 0}
             >
               <Trash2 size={16} className="ml-2" />
-              مسح جميع البيانات
+              مسح الكل
             </Button>
           </div>
 
@@ -390,18 +425,18 @@ const OfflineDownloadManager: React.FC<OfflineDownloadManagerProps> = ({
             
             {isLoading ? (
               <div className="text-center py-8">
-                <RefreshCw className="animate-spin mx-auto mb-2" size={24} />
+                <Loader2 className="animate-spin mx-auto mb-2" size={24} />
                 <p>جاري تحميل قائمة السور...</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-96 overflow-y-auto">
+              <div className="grid grid-cols-1 gap-3 max-h-96 overflow-y-auto">
                 {chapters.map((chapter) => {
                   const isDownloaded = downloadedChapters.includes(chapter.id);
                   const isSelected = selectedChapters.includes(chapter.id);
                   
                   return (
-                    <Card key={chapter.id} className={`${isDownloaded ? 'bg-green-50 border-green-200' : ''}`}>
-                      <CardContent className="p-3">
+                    <Card key={chapter.id} className={`${isDownloaded ? 'bg-green-50 border-green-200' : ''} transition-all duration-200`}>
+                      <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
                             {!isDownloaded && (
@@ -414,8 +449,8 @@ const OfflineDownloadManager: React.FC<OfflineDownloadManagerProps> = ({
                               />
                             )}
                             
-                            <div>
-                              <h4 className="font-medium arabic-text">{chapter.name_arabic}</h4>
+                            <div className="flex-1">
+                              <h4 className="font-medium arabic-text text-lg">{chapter.name_arabic}</h4>
                               <p className="text-sm text-gray-600">
                                 {chapter.translated_name.name} • {chapter.verses_count} آية
                               </p>
@@ -427,7 +462,7 @@ const OfflineDownloadManager: React.FC<OfflineDownloadManagerProps> = ({
                               <>
                                 <div className="flex items-center gap-1 text-green-600">
                                   <Check size={16} />
-                                  <span className="text-xs">محملة</span>
+                                  <span className="text-xs font-medium">محملة</span>
                                 </div>
                                 <Button
                                   size="sm"
@@ -439,7 +474,7 @@ const OfflineDownloadManager: React.FC<OfflineDownloadManagerProps> = ({
                                 </Button>
                               </>
                             ) : (
-                              <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                              <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium">
                                 غير محملة
                               </span>
                             )}

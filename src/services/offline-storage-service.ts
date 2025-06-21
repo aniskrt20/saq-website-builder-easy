@@ -14,8 +14,10 @@ interface DownloadProgress {
 
 class OfflineStorageService {
   private dbName = 'QuranOfflineDB';
-  private dbVersion = 4; // زيادة رقم الإصدار لإصلاح المشاكل
+  private dbVersion = 5; // زيادة رقم الإصدار للتحسينات الجديدة
   private db: IDBDatabase | null = null;
+  private maxRetries = 3;
+  private retryDelay = 1000;
 
   async initDB(): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -70,10 +72,50 @@ class OfflineStorageService {
       await this.initDB();
     }
     
-    // التحقق من صحة الاتصال
     if (!this.db || this.db.version === 0) {
       throw new Error('قاعدة البيانات غير جاهزة');
     }
+  }
+
+  private async fetchWithRetry(url: string, retries = this.maxRetries): Promise<Response> {
+    for (let i = 0; i < retries; i++) {
+      try {
+        console.log(`محاولة ${i + 1} من ${retries} لتحميل: ${url}`);
+        
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 ثانية timeout
+        
+        const response = await fetch(url, {
+          signal: controller.signal,
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          mode: 'cors',
+          cache: 'no-cache'
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (response.ok) {
+          return response;
+        }
+        
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        
+      } catch (error) {
+        console.log(`فشلت المحاولة ${i + 1}:`, error);
+        
+        if (i === retries - 1) {
+          throw error;
+        }
+        
+        // انتظار قبل إعادة المحاولة
+        await new Promise(resolve => setTimeout(resolve, this.retryDelay * (i + 1)));
+      }
+    }
+    
+    throw new Error('فشل في جميع المحاولات');
   }
 
   async getDownloadedChapters(): Promise<number[]> {
@@ -304,80 +346,115 @@ class OfflineStorageService {
 
       onProgress?.(10);
       
-      try {
-        // محاولة تحميل من API الأساسي
-        console.log(`تحميل بيانات السورة ${chapterId} من API الأساسي`);
-        onProgress?.(20);
-        
-        const response = await fetch(`https://api.quranapi.pages.dev/chapters/${chapterId}/verses`);
-        
-        if (!response.ok) {
-          throw new Error('فشل API الأساسي');
+      let success = false;
+      
+      // جرب مصادر متعددة للبيانات
+      const apiSources = [
+        {
+          name: 'Quran API',
+          url: `https://api.quranapi.pages.dev/chapters/${chapterId}/verses`,
+          handler: async (data: any) => {
+            if (!data.chapter || !data.verses || !Array.isArray(data.verses)) {
+              throw new Error('بيانات غير صحيحة من Quran API');
+            }
+            await this.saveChapter(data.chapter);
+            await this.saveVerses(chapterId, data.verses);
+          }
+        },
+        {
+          name: 'AlQuran Cloud',
+          url: `https://api.alquran.cloud/v1/surah/${chapterId}/quran-uthmani`,
+          handler: async (data: any) => {
+            if (!data.data || !data.data.ayahs) {
+              throw new Error('بيانات غير صحيحة من AlQuran Cloud');
+            }
+            
+            const surah = data.data;
+            const chapterData = {
+              id: surah.number,
+              name_arabic: surah.name,
+              name_simple: surah.englishName,
+              translated_name: { name: surah.englishNameTranslation },
+              verses_count: surah.ayahs.length,
+              revelation_place: surah.revelationType.toLowerCase(),
+              bismillah_pre: surah.number !== 1 && surah.number !== 9
+            };
+            
+            const versesData = surah.ayahs.map(ayah => ({
+              id: ayah.numberInSurah,
+              text_uthmani: ayah.text,
+              text_simple: ayah.text,
+              verse_key: `${surah.number}:${ayah.numberInSurah}`,
+              juz_number: ayah.juz,
+              page_number: ayah.page
+            }));
+            
+            await this.saveChapter(chapterData);
+            await this.saveVerses(chapterId, versesData);
+          }
+        },
+        {
+          name: 'QuranPedia',
+          url: `https://api.quranpedia.net/api/v1/verses/by_surah/${chapterId}`,
+          handler: async (data: any) => {
+            if (!data.data || !Array.isArray(data.data)) {
+              throw new Error('بيانات غير صحيحة من QuranPedia');
+            }
+            
+            // إنشاء بيانات السورة من البيانات المتاحة
+            const chapterData = {
+              id: chapterId,
+              name_arabic: `السورة ${chapterId}`,
+              name_simple: `Chapter ${chapterId}`,
+              translated_name: { name: `Chapter ${chapterId}` },
+              verses_count: data.data.length,
+              revelation_place: 'makkah',
+              bismillah_pre: chapterId !== 1 && chapterId !== 9
+            };
+            
+            const versesData = data.data.map((verse: any, index: number) => ({
+              id: index + 1,
+              text_uthmani: verse.text || verse.arabic || '',
+              text_simple: verse.text || verse.arabic || '',
+              verse_key: `${chapterId}:${index + 1}`,
+              juz_number: verse.juz || 1,
+              page_number: verse.page || 1
+            }));
+            
+            await this.saveChapter(chapterData);
+            await this.saveVerses(chapterId, versesData);
+          }
         }
-        
-        onProgress?.(40);
-        
-        const data = await response.json();
-        
-        if (!data.chapter || !data.verses || !Array.isArray(data.verses)) {
-          throw new Error('بيانات غير صحيحة من API الأساسي');
+      ];
+      
+      for (let i = 0; i < apiSources.length && !success; i++) {
+        const source = apiSources[i];
+        try {
+          console.log(`جاري المحاولة مع ${source.name}...`);
+          onProgress?.(20 + (i * 20));
+          
+          const response = await this.fetchWithRetry(source.url);
+          onProgress?.(40 + (i * 20));
+          
+          const data = await response.json();
+          onProgress?.(60 + (i * 20));
+          
+          await source.handler(data);
+          onProgress?.(80 + (i * 10));
+          
+          success = true;
+          console.log(`نجح التحميل من ${source.name}`);
+          
+        } catch (error) {
+          console.log(`فشل ${source.name}:`, error);
+          if (i === apiSources.length - 1) {
+            throw new Error(`فشل في جميع مصادر البيانات للسورة ${chapterId}`);
+          }
         }
-        
-        onProgress?.(60);
-        
-        await this.saveChapter(data.chapter);
-        onProgress?.(80);
-        
-        await this.saveVerses(chapterId, data.verses);
-        onProgress?.(90);
-        
-      } catch (primaryError) {
-        console.log('فشل API الأساسي، استخدام API البديل...', primaryError);
-        onProgress?.(25);
-        
-        // استخدام API البديل
-        const fallbackResponse = await fetch(`https://api.alquran.cloud/v1/surah/${chapterId}/quran-uthmani`);
-        
-        if (!fallbackResponse.ok) {
-          throw new Error('فشل في جميع مصادر البيانات');
-        }
-        
-        onProgress?.(50);
-        
-        const fallbackData = await fallbackResponse.json();
-        
-        if (!fallbackData.data || !fallbackData.data.ayahs) {
-          throw new Error('بيانات غير صحيحة من API البديل');
-        }
-        
-        const surah = fallbackData.data;
-        
-        const chapterData = {
-          id: surah.number,
-          name_arabic: surah.name,
-          name_simple: surah.englishName,
-          translated_name: { name: surah.englishNameTranslation },
-          verses_count: surah.ayahs.length,
-          revelation_place: surah.revelationType.toLowerCase(),
-          bismillah_pre: surah.number !== 1 && surah.number !== 9
-        };
-        
-        const versesData = surah.ayahs.map(ayah => ({
-          id: ayah.numberInSurah,
-          text_uthmani: ayah.text,
-          text_simple: ayah.text,
-          verse_key: `${surah.number}:${ayah.numberInSurah}`,
-          juz_number: ayah.juz,
-          page_number: ayah.page
-        }));
-        
-        onProgress?.(70);
-        
-        await this.saveChapter(chapterData);
-        onProgress?.(85);
-        
-        await this.saveVerses(chapterId, versesData);
-        onProgress?.(90);
+      }
+      
+      if (!success) {
+        throw new Error(`فشل في تحميل السورة ${chapterId} من جميع المصادر`);
       }
       
       // تحديث قائمة السور المحملة
@@ -525,6 +602,7 @@ class OfflineStorageService {
   ): Promise<void> {
     const total = chapterIds.length;
     let completed = 0;
+    let failed = 0;
     
     console.log(`بدء تحميل ${total} سورة`);
     
@@ -542,7 +620,7 @@ class OfflineStorageService {
         });
         
         await this.downloadChapter(chapterId, (chapterProgress) => {
-          // حساب التقدم الإجمالي
+          // حساب التقدم الإجمالي مع تحديث فوري
           const currentOverall = Math.round(((completed + (chapterProgress / 100)) / total) * 100);
           
           onProgress?.(currentOverall, {
@@ -564,8 +642,12 @@ class OfflineStorageService {
           status: 'completed'
         });
         
+        // انتظار قصير لمنع التحميل المفرط
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
       } catch (error) {
         console.error(`فشل تحميل السورة ${chapterId}:`, error);
+        failed++;
         
         // إرسال تحديث خطأ في السورة
         onProgress?.(baseProgress, {
@@ -582,12 +664,12 @@ class OfflineStorageService {
     // إرسال تحديث نهائي
     onProgress?.(100, {
       chapterId: 0,
-      chapterName: 'اكتمل التحميل',
+      chapterName: `اكتمل التحميل - نجح: ${completed}, فشل: ${failed}`,
       progress: 100,
-      status: 'completed'
+      status: completed > 0 ? 'completed' : 'error'
     });
     
-    console.log(`تم الانتهاء من تحميل ${completed} من ${total} سورة`);
+    console.log(`تم الانتهاء من تحميل ${completed} من ${total} سورة، فشل: ${failed}`);
   }
 }
 
