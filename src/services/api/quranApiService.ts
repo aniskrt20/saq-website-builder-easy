@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 
 // Types for the new Quran API
@@ -177,9 +176,7 @@ const convertAlQuranCloudChapterToOurFormat = (surah: AlQuranCloudSurah): QuranA
     text_uthmani: ayah.text,
     text_simple: ayah.text,
     juz_number: ayah.juz,
-    h
-
-_number: ayah.hizbQuarter,
+    hizb_number: ayah.hizbQuarter,
     rub_number: ayah.ruku,
     page_number: ayah.page,
     words: []
