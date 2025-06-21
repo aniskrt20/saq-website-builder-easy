@@ -1,4 +1,3 @@
-
 interface OfflineQuranData {
   chapters: any[];
   verses: { [chapterId: number]: any[] };
@@ -15,7 +14,7 @@ interface DownloadProgress {
 
 class OfflineStorageService {
   private dbName = 'QuranOfflineDB';
-  private dbVersion = 3; // زيادة رقم الإصدار لإصلاح المشاكل
+  private dbVersion = 4; // زيادة رقم الإصدار لإصلاح المشاكل
   private db: IDBDatabase | null = null;
 
   async initDB(): Promise<void> {
@@ -86,24 +85,33 @@ class OfflineStorageService {
         const store = transaction.objectStore('metadata');
         const request = store.get('downloadedChapters');
         
+        let timeoutId: NodeJS.Timeout;
+        let resolved = false;
+        
+        const resolveOnce = (value: number[]) => {
+          if (!resolved) {
+            resolved = true;
+            if (timeoutId) clearTimeout(timeoutId);
+            resolve(value);
+          }
+        };
+        
         transaction.oncomplete = () => {
           const result = request.result;
           const chapters = result ? (Array.isArray(result.value) ? result.value : []) : [];
           console.log('السور المحملة:', chapters);
-          resolve(chapters);
+          resolveOnce(chapters);
         };
         
         transaction.onerror = () => {
           console.error('خطأ في استرجاع قائمة السور المحملة:', transaction.error);
-          resolve([]); // إرجاع مصفوفة فارغة بدلاً من رفض
+          resolveOnce([]); // إرجاع مصفوفة فارغة بدلاً من رفض
         };
         
         // إضافة timeout للعملية
-        setTimeout(() => {
-          if (transaction.readyState !== 'done') {
-            console.warn('انتهت مهلة استرجاع السور المحملة');
-            resolve([]);
-          }
+        timeoutId = setTimeout(() => {
+          console.warn('انتهت مهلة استرجاع السور المحملة');
+          resolveOnce([]);
         }, 5000);
       });
     } catch (error) {
