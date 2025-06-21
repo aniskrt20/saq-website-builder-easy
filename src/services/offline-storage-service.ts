@@ -290,7 +290,7 @@ class OfflineStorageService {
   async downloadChapter(chapterId: number, onProgress?: (progress: number) => void): Promise<void> {
     try {
       console.log(`بدء تحميل السورة ${chapterId}`);
-      onProgress?.(5);
+      onProgress?.(0);
 
       // التحقق من وجود السورة مسبقاً
       const existingChapter = await this.getChapter(chapterId);
@@ -307,11 +307,15 @@ class OfflineStorageService {
       try {
         // محاولة تحميل من API الأساسي
         console.log(`تحميل بيانات السورة ${chapterId} من API الأساسي`);
+        onProgress?.(20);
+        
         const response = await fetch(`https://api.quranapi.pages.dev/chapters/${chapterId}/verses`);
         
         if (!response.ok) {
           throw new Error('فشل API الأساسي');
         }
+        
+        onProgress?.(40);
         
         const data = await response.json();
         
@@ -325,10 +329,11 @@ class OfflineStorageService {
         onProgress?.(80);
         
         await this.saveVerses(chapterId, data.verses);
-        onProgress?.(95);
+        onProgress?.(90);
         
       } catch (primaryError) {
         console.log('فشل API الأساسي، استخدام API البديل...', primaryError);
+        onProgress?.(25);
         
         // استخدام API البديل
         const fallbackResponse = await fetch(`https://api.alquran.cloud/v1/surah/${chapterId}/quran-uthmani`);
@@ -336,6 +341,8 @@ class OfflineStorageService {
         if (!fallbackResponse.ok) {
           throw new Error('فشل في جميع مصادر البيانات');
         }
+        
+        onProgress?.(50);
         
         const fallbackData = await fallbackResponse.json();
         
@@ -364,13 +371,13 @@ class OfflineStorageService {
           page_number: ayah.page
         }));
         
-        onProgress?.(60);
+        onProgress?.(70);
         
         await this.saveChapter(chapterData);
-        onProgress?.(80);
+        onProgress?.(85);
         
         await this.saveVerses(chapterId, versesData);
-        onProgress?.(95);
+        onProgress?.(90);
       }
       
       // تحديث قائمة السور المحملة
@@ -523,28 +530,34 @@ class OfflineStorageService {
     
     for (let i = 0; i < chapterIds.length; i++) {
       const chapterId = chapterIds[i];
-      const overallProgress = Math.round((completed / total) * 100);
+      const baseProgress = Math.round((completed / total) * 100);
       
       try {
-        onProgress?.(overallProgress, {
+        // إرسال تحديث بداية تحميل السورة
+        onProgress?.(baseProgress, {
           chapterId,
           chapterName: `السورة ${chapterId}`,
           progress: 0,
           status: 'downloading'
         });
         
-        await this.downloadChapter(chapterId, (progress) => {
-          onProgress?.(overallProgress, {
+        await this.downloadChapter(chapterId, (chapterProgress) => {
+          // حساب التقدم الإجمالي
+          const currentOverall = Math.round(((completed + (chapterProgress / 100)) / total) * 100);
+          
+          onProgress?.(currentOverall, {
             chapterId,
             chapterName: `السورة ${chapterId}`,
-            progress,
+            progress: chapterProgress,
             status: 'downloading'
           });
         });
         
         completed++;
+        const finalProgress = Math.round((completed / total) * 100);
         
-        onProgress?.(Math.round((completed / total) * 100), {
+        // إرسال تحديث اكتمال السورة
+        onProgress?.(finalProgress, {
           chapterId,
           chapterName: `السورة ${chapterId}`,
           progress: 100,
@@ -553,15 +566,20 @@ class OfflineStorageService {
         
       } catch (error) {
         console.error(`فشل تحميل السورة ${chapterId}:`, error);
-        onProgress?.(overallProgress, {
+        
+        // إرسال تحديث خطأ في السورة
+        onProgress?.(baseProgress, {
           chapterId,
           chapterName: `السورة ${chapterId}`,
           progress: 0,
           status: 'error'
         });
+        
+        // لا نوقف التحميل، نكمل مع باقي السور
       }
     }
     
+    // إرسال تحديث نهائي
     onProgress?.(100, {
       chapterId: 0,
       chapterName: 'اكتمل التحميل',
