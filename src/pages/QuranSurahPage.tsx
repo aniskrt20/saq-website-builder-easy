@@ -197,7 +197,7 @@ const QuranSurahPage = () => {
 
         <div className="max-w-6xl mx-auto px-6 py-10">
           <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-red-500 to-pink-500 rounded-2xl blur opacity-20"></div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-red-500 to-pink-500 rounded-2xl blur-2xl opacity-20"></div>
             <Card className="relative bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-2xl">
               <CardContent className="p-8 text-center">
                 <div className="w-16 h-16 rounded-full bg-gradient-to-r from-red-400 to-pink-400 flex items-center justify-center mx-auto mb-4">
