@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import VerseAudioPlayer from "@/components/quran/VerseAudioPlayer";
 import SurahAudioPlayer from "@/components/quran/SurahAudioPlayer";
 import { useToast } from "@/hooks/use-toast";
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { Capacitor } from '@capacitor/core';
 
 const QuranSurahPage = () => {
   const { surahId } = useParams<{ surahId: string }>();
@@ -22,24 +24,43 @@ const QuranSurahPage = () => {
   const { data, isLoading, error } = useQuranApiChapter(surahNumber);
   const { data: suwarData } = useSuwar();
 
-  const downloadAndSaveSurah = async (audioUrl: string, fileName: string) => {
+  const downloadAudioFile = async (audioUrl: string, fileName: string): Promise<void> => {
     try {
+      console.log('بدء تحميل الملف:', fileName);
+      
+      // تحميل الملف الصوتي
       const response = await fetch(audioUrl);
       if (!response.ok) {
-        throw new Error('فشل في تحميل الملف الصوتي');
+        throw new Error(`فشل في تحميل الملف: ${response.status}`);
       }
       
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      const arrayBuffer = await response.arrayBuffer();
+      const base64Data = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+      
+      if (Capacitor.isNativePlatform()) {
+        // حفظ الملف على الجهاز باستخدام Capacitor
+        const result = await Filesystem.writeFile({
+          path: `القرآن الكريم/${fileName}`,
+          data: base64Data,
+          directory: Directory.Documents,
+          encoding: Encoding.UTF8
+        });
+        
+        console.log('تم حفظ الملف في:', result.uri);
+      } else {
+        // للمتصفحات العادية
+        const blob = new Blob([arrayBuffer], { type: 'audio/mpeg' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }
     } catch (error) {
-      console.error('خطأ في تحميل السورة:', error);
+      console.error('خطأ في تحميل الملف:', error);
       throw error;
     }
   };
@@ -50,17 +71,19 @@ const QuranSurahPage = () => {
     setIsDownloading(true);
     try {
       const audioUrl = `https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${data.chapter.id}.mp3`;
-      const fileName = `${data.chapter.name_arabic}.mp3`;
+      const fileName = `سورة_${data.chapter.name_arabic}.mp3`;
       
-      await downloadAndSaveSurah(audioUrl, fileName);
+      await downloadAudioFile(audioUrl, fileName);
+      
       toast({
         title: "✅ تم التحميل بنجاح",
-        description: `تم تحميل سورة ${data.chapter.name_arabic}`,
+        description: `تم تحميل سورة ${data.chapter.name_arabic} وحفظها في مجلد "القرآن الكريم"`,
       });
     } catch (error) {
+      console.error('خطأ عام في التحميل:', error);
       toast({
         title: "❌ خطأ في التحميل",
-        description: "فشل في تحميل السورة، يرجى المحاولة مرة أخرى",
+        description: "فشل في تحميل السورة، يرجى التأكد من الاتصال بالإنترنت والمحاولة مرة أخرى",
         variant: "destructive",
       });
     } finally {
@@ -80,23 +103,29 @@ const QuranSurahPage = () => {
       for (let i = 1; i <= 114; i++) {
         try {
           const surah = suwarData.find(s => s.id === i);
-          const surahName = surah ? surah.name : `السورة ${i}`;
+          const surahName = surah ? surah.name : `السورة_${i}`;
           const audioUrl = `https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${i}.mp3`;
           const fileName = `${surahName}.mp3`;
           
-          await downloadAndSaveSurah(audioUrl, fileName);
+          await downloadAudioFile(audioUrl, fileName);
           successCount++;
           
-          // انتظار قصير بين التحميلات لتجنب التحميل المفرط
-          await new Promise(resolve => setTimeout(resolve, 500));
+          // تحديث المستخدم بالتقدم
+          toast({
+            title: `📥 جاري التحميل ${successCount}/114`,
+            description: `تم تحميل ${surahName}`,
+          });
+          
+          // انتظار قصير بين التحميلات
+          await new Promise(resolve => setTimeout(resolve, 1000));
         } catch (error) {
           console.error(`فشل تحميل السورة ${i}:`, error);
         }
       }
       
       toast({
-        title: "✅ تم تحميل جميع السور!",
-        description: `تم تحميل ${successCount} سورة بنجاح`,
+        title: "🎉 اكتمل التحميل!",
+        description: `تم تحميل ${successCount} سورة من أصل 114 سورة بنجاح`,
       });
     } catch (error) {
       toast({
@@ -322,7 +351,7 @@ const QuranSurahPage = () => {
                       ) : (
                         <>
                           <Download className="mr-2" size={18} />
-                          ⬇️ تحميل سورة {chapter.name_arabic}
+                          📱 تحميل سورة {chapter.name_arabic}
                         </>
                       )}
                     </Button>
@@ -445,7 +474,7 @@ const QuranSurahPage = () => {
               ) : (
                 <>
                   <Download className="mr-3" size={24} />
-                  ⬇️ تحميل كل السور
+                  📱 تحميل كل السور
                 </>
               )}
             </Button>
