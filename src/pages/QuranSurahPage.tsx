@@ -80,7 +80,7 @@ const QuranSurahPage = () => {
       for (let i = 1; i <= 114; i++) {
         try {
           const surah = suwarData.find(s => s.id === i);
-          const surahName = surah ? surah.name_arabic : `السورة ${i}`;
+          const surahName = surah ? surah.name : `السورة ${i}`;
           const audioUrl = `https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${i}.mp3`;
           const fileName = `${surahName}.mp3`;
           
