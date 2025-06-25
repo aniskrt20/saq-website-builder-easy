@@ -14,7 +14,7 @@ const QuranSurahPage = () => {
   const navigate = useNavigate();
   const surahNumber = surahId ? parseInt(surahId) : 1;
   const [highlightedVerse, setHighlightedVerse] = useState<number | null>(null);
-  const [selectedReciterId, setSelectedReciterId] = useState(7); // Default: عبد الباسط عبد الصمد
+  const [selectedReciterId, setSelectedReciterId] = useState(1); // Default: عبد الباسط عبد الصمد
   
   const { data, isLoading, error } = useQuranApiChapter(surahNumber);
   const { data: suwarData } = useSuwar();

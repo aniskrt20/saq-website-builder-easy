@@ -1,6 +1,5 @@
 
 import React from "react";
-import { useReciters } from "@/services/api/reciterServices";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Volume2, User } from "lucide-react";
 
@@ -9,24 +8,23 @@ interface ReciterSelectorProps {
   onReciterChange: (reciterId: number) => void;
 }
 
+// أشهر 10 قراء مع أصوات موثوقة
+const FAMOUS_RECITERS = [
+  { id: 1, name: "عبد الباسط عبد الصمد" },
+  { id: 2, name: "ماهر المعيقلي" },
+  { id: 3, name: "مشاري العفاسي" },
+  { id: 4, name: "سعد الغامدي" },
+  { id: 5, name: "أحمد العجمي" },
+  { id: 6, name: "محمد صديق المنشاوي" },
+  { id: 7, name: "عبد الرحمن السديس" },
+  { id: 8, name: "ياسر الدوسري" },
+  { id: 9, name: "ناصر القطامي" },
+  { id: 10, name: "خالد الجليل" }
+];
+
 const ReciterSelector = ({ selectedReciterId, onReciterChange }: ReciterSelectorProps) => {
-  const { data: reciters, isLoading } = useReciters();
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center gap-2 text-white/70 text-sm">
-        <Volume2 size={16} />
-        <span>جاري تحميل القراء...</span>
-      </div>
-    );
-  }
-
-  if (!reciters || reciters.length === 0) {
-    return null;
-  }
-
   // Get the selected reciter name
-  const selectedReciter = reciters.find(r => r.id === selectedReciterId);
+  const selectedReciter = FAMOUS_RECITERS.find(r => r.id === selectedReciterId);
 
   return (
     <div className="flex items-center gap-3">
@@ -45,7 +43,7 @@ const ReciterSelector = ({ selectedReciterId, onReciterChange }: ReciterSelector
           </SelectValue>
         </SelectTrigger>
         <SelectContent className="bg-white/95 backdrop-blur-lg border-white/30 max-h-60">
-          {reciters.map((reciter) => (
+          {FAMOUS_RECITERS.map((reciter) => (
             <SelectItem 
               key={reciter.id} 
               value={reciter.id.toString()}

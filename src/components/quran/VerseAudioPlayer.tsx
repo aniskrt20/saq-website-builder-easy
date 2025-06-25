@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from "react";
 import { Volume2, Pause, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,7 +13,7 @@ const VerseAudioPlayer = ({
   surahNumber, 
   verseNumber, 
   size = "sm",
-  selectedReciterId = 7 // Default: عبد الباسط عبد الصمد
+  selectedReciterId = 1 // Default: عبد الباسط عبد الصمد
 }: VerseAudioPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -24,22 +23,28 @@ const VerseAudioPlayer = ({
     const surahPadded = surahNum.toString().padStart(3, '0');
     const versePadded = verseNum.toString().padStart(3, '0');
     
-    // Different audio sources based on reciter ID for individual verses
+    // أشهر القراء مع مصادر صوتية موثوقة للآيات المفردة
     switch (reciterId) {
-      case 7: // عبد الباسط عبد الصمد
+      case 1: // عبد الباسط عبد الصمد
         return `https://everyayah.com/data/Abdul_Basit_Murattal_64kbps/${surahPadded}${versePadded}.mp3`;
-      case 1: // ماهر المعيقلي
+      case 2: // ماهر المعيقلي
         return `https://everyayah.com/data/Maher_AlMuaiqly_64kbps/${surahPadded}${versePadded}.mp3`;
-      case 2: // مشاري راشد العفاسي
+      case 3: // مشاري العفاسي
         return `https://everyayah.com/data/Alafasy_64kbps/${surahPadded}${versePadded}.mp3`;
-      case 3: // سعد الغامدي
+      case 4: // سعد الغامدي
         return `https://everyayah.com/data/Saad_Al-Ghamdi_64kbps/${surahPadded}${versePadded}.mp3`;
-      case 4: // أحمد العجمي
+      case 5: // أحمد العجمي
         return `https://everyayah.com/data/Ahmed_Al_Ajamy_64kbps/${surahPadded}${versePadded}.mp3`;
-      case 5: // محمد صديق المنشاوي
+      case 6: // محمد صديق المنشاوي
         return `https://everyayah.com/data/Minshawy_Murattal_128kbps/${surahPadded}${versePadded}.mp3`;
-      case 6: // عبد الرحمن السديس
+      case 7: // عبد الرحمن السديس
         return `https://everyayah.com/data/AbdurRahman_As-Sudais_64kbps/${surahPadded}${versePadded}.mp3`;
+      case 8: // ياسر الدوسري
+        return `https://everyayah.com/data/Yasser_Ad-Dussary_128kbps/${surahPadded}${versePadded}.mp3`;
+      case 9: // ناصر القطامي
+        return `https://everyayah.com/data/Nasser_Alqatami_128kbps/${surahPadded}${versePadded}.mp3`;
+      case 10: // خالد الجليل
+        return `https://everyayah.com/data/Khalefa_Al-Tunaiji_64kbps/${surahPadded}${versePadded}.mp3`;
       default:
         return `https://everyayah.com/data/Abdul_Basit_Murattal_64kbps/${surahPadded}${versePadded}.mp3`;
     }
