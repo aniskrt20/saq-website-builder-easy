@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuranApiChapter } from "@/services/api/quranApiService";
@@ -15,6 +14,7 @@ const QuranSurahPage = () => {
   const navigate = useNavigate();
   const surahNumber = surahId ? parseInt(surahId) : 1;
   const [highlightedVerse, setHighlightedVerse] = useState<number | null>(null);
+  const [selectedReciterId, setSelectedReciterId] = useState(7); // Default: عبد الباسط عبد الصمد
   
   const { data, isLoading, error } = useQuranApiChapter(surahNumber);
   const { data: suwarData } = useSuwar();
@@ -294,6 +294,7 @@ const QuranSurahPage = () => {
                                   surahNumber={surahNumber} 
                                   verseNumber={verse.id} 
                                   size="sm"
+                                  selectedReciterId={selectedReciterId}
                                 />
                                 <div className="w-8 h-8 rounded-full bg-gradient-to-r from-red-400 to-pink-400 flex items-center justify-center shadow-md hover:scale-110 transition-transform duration-200 cursor-pointer">
                                   <Heart className="text-white" size={14} />
