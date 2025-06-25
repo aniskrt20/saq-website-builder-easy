@@ -23,6 +23,11 @@ const QuranSurahPage = () => {
     navigate("/quran");
   };
 
+  const handleReciterChange = (reciterId: number) => {
+    setSelectedReciterId(reciterId);
+    console.log(`Reciter changed to: ${reciterId}`);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
@@ -215,6 +220,7 @@ const QuranSurahPage = () => {
                   <SurahAudioPlayer 
                     surahNumber={surahNumber} 
                     surahName={chapter.name_arabic}
+                    onReciterChange={handleReciterChange}
                   />
                 </div>
               </div>

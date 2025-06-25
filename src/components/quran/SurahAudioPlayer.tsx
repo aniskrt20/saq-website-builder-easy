@@ -7,9 +7,10 @@ import ReciterSelector from "./ReciterSelector";
 interface SurahAudioPlayerProps {
   surahNumber: number;
   surahName: string;
+  onReciterChange?: (reciterId: number) => void;
 }
 
-const SurahAudioPlayer = ({ surahNumber, surahName }: SurahAudioPlayerProps) => {
+const SurahAudioPlayer = ({ surahNumber, surahName, onReciterChange }: SurahAudioPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedReciterId, setSelectedReciterId] = useState(7); // Default: عبد الباسط عبد الصمد
@@ -125,6 +126,11 @@ const SurahAudioPlayer = ({ surahNumber, surahName }: SurahAudioPlayerProps) => 
       setIsPlaying(false);
     }
     setSelectedReciterId(reciterId);
+    
+    // Notify parent component about reciter change
+    if (onReciterChange) {
+      onReciterChange(reciterId);
+    }
   };
 
   return (
