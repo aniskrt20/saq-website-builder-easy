@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useGeoLocation } from "@/hooks/use-location";
 import { getHijriDate } from "@/data/prayers";
@@ -50,19 +49,19 @@ const Header: React.FC<HeaderProps> = ({ title = "صدقة جارية" }) => {
   }, []);
 
   return (
-    <div className="w-full islamic-header text-white p-6 rounded-b-2xl relative overflow-hidden">
+    <div className="w-full islamic-header text-white p-4 sm:p-6 rounded-b-2xl relative overflow-hidden">
       {/* Decorative elements */}
       <div className="absolute top-0 left-0 w-full h-1 bg-islamic-secondary/50"></div>
       <div className="absolute bottom-0 left-0 w-full h-1 bg-islamic-secondary/30"></div>
       
-      <div className="text-center pb-4 relative z-10">
-        <h1 className="text-2xl font-bold">{title}</h1>
-        <div className="flex items-center justify-center mt-2 text-sm opacity-80">
-          <MapPin size={16} className="mr-1" />
+      <div className="text-center pb-3 sm:pb-4 relative z-10">
+        <h1 className="text-xl sm:text-2xl font-bold">{title}</h1>
+        <div className="flex items-center justify-center mt-2 text-xs sm:text-sm opacity-80">
+          <MapPin size={14} className="mr-1" />
           <span>
             {loading ? (
               <span className="flex items-center">
-                جاري تحديد الموقع... <Loader2 size={12} className="ml-1 animate-spin" />
+                جاري تحديد الموقع... <Loader2 size={10} className="ml-1 animate-spin" />
               </span>
             ) : location?.error ? (
               <span>تعذر تحديد الموقع</span>
@@ -83,12 +82,12 @@ const Header: React.FC<HeaderProps> = ({ title = "صدقة جارية" }) => {
         </div>
         
         <div className="text-center">
-          <h2 className="arabic-text text-xl mt-3">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيمِ</h2>
-          <p className="text-sm mt-2 arabic-text flex items-center justify-center">
-            <Moon size={14} className="mx-1 text-islamic-secondary" />
+          <h2 className="arabic-text text-lg sm:text-xl mt-2 sm:mt-3">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيمِ</h2>
+          <p className="text-xs sm:text-sm mt-2 arabic-text flex items-center justify-center">
+            <Moon size={12} className="mx-1 text-islamic-secondary" />
             {isLoadingDate ? (
               <span className="flex items-center">
-                جاري تحميل التاريخ... <Loader2 size={10} className="mr-1 animate-spin" />
+                جاري تحميل التاريخ... <Loader2 size={8} className="mr-1 animate-spin" />
               </span>
             ) : hijriDate}
           </p>

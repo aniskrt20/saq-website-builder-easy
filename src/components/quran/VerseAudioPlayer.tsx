@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from "react";
 import { Volume2, Pause, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -100,8 +99,8 @@ const VerseAudioPlayer = ({ surahNumber, verseNumber, size = "sm" }: VerseAudioP
     }
   };
 
-  const iconSize = size === "sm" ? 14 : 18;
-  const buttonSize = size === "sm" ? "w-8 h-8" : "w-10 h-10";
+  const iconSize = size === "sm" ? 12 : 14;
+  const buttonSize = size === "sm" ? "w-7 h-7 sm:w-8 sm:h-8" : "w-8 h-8 sm:w-10 sm:h-10";
 
   return (
     <Button
@@ -112,7 +111,7 @@ const VerseAudioPlayer = ({ surahNumber, verseNumber, size = "sm" }: VerseAudioP
       disabled={isLoading}
     >
       {isLoading ? (
-        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
       ) : isPlaying ? (
         <Pause className="text-white" size={iconSize} />
       ) : (

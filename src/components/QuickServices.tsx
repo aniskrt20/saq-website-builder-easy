@@ -19,7 +19,7 @@ const services: ServiceItem[] = [
     id: "adhkar",
     name: "Adhkar",
     nameAr: "الأذكار",
-    icon: <Scroll size={24} />,
+    icon: <Scroll size={20} />,
     color: "#059669",
     bgColor: "from-emerald-500 to-teal-600",
     path: "/adhkar"
@@ -28,7 +28,7 @@ const services: ServiceItem[] = [
     id: "radio",
     name: "Radio", 
     nameAr: "الإذاعات",
-    icon: <Radio size={24} />,
+    icon: <Radio size={20} />,
     color: "#0891b2",
     bgColor: "from-cyan-500 to-blue-600",
     path: "/radio"
@@ -37,7 +37,7 @@ const services: ServiceItem[] = [
     id: "videos",
     name: "Videos",
     nameAr: "قناة القرآن",
-    icon: <Video size={24} />,
+    icon: <Video size={20} />,
     color: "#7c3aed",
     bgColor: "from-violet-500 to-purple-600",
     path: "/videos"
@@ -46,7 +46,7 @@ const services: ServiceItem[] = [
     id: "hadith",
     name: "Hadith",
     nameAr: "الحديث",
-    icon: <BookOpen size={24} />,
+    icon: <BookOpen size={20} />,
     color: "#dc2626",
     bgColor: "from-red-500 to-rose-600",
     path: "/hadith"
@@ -55,7 +55,7 @@ const services: ServiceItem[] = [
     id: "tasbih",
     name: "Tasbih",
     nameAr: "التسبيح",
-    icon: <Gift size={24} />,
+    icon: <Gift size={20} />,
     color: "#ea580c",
     bgColor: "from-orange-500 to-amber-600",
     path: "/tasbih"
@@ -64,7 +64,7 @@ const services: ServiceItem[] = [
     id: "about",
     name: "About",
     nameAr: "من نحن",
-    icon: <Info size={24} />,
+    icon: <Info size={20} />,
     color: "#0369a1",
     bgColor: "from-blue-500 to-indigo-600",
     path: "/about"
@@ -73,7 +73,7 @@ const services: ServiceItem[] = [
     id: "privacy",
     name: "Privacy",
     nameAr: "سياسة الخصوصية",
-    icon: <Shield size={24} />,
+    icon: <Shield size={20} />,
     color: "#15803d",
     bgColor: "from-green-500 to-emerald-600",
     path: "/privacy"
@@ -82,7 +82,7 @@ const services: ServiceItem[] = [
     id: "copyright",
     name: "Copyright",
     nameAr: "حقوق النشر",
-    icon: <Copyright size={24} />,
+    icon: <Copyright size={20} />,
     color: "#be185d",
     bgColor: "from-pink-500 to-rose-600",
     path: "/copyright"
@@ -98,7 +98,7 @@ const QuickServices = () => {
           <div className="flex items-center space-x-4">
             <div className="h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent flex-1 w-16"></div>
             <div className="relative">
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-white arabic-text px-4">الخدمات السريعة</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white arabic-text px-4">الخدمات السريعة</h2>
               <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
             </div>
             <div className="h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent flex-1 w-16"></div>
@@ -106,7 +106,7 @@ const QuickServices = () => {
         </div>
       </div>
       
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
         {services.map((service, index) => (
           <Link to={service.path} key={service.id}>
             <div 
@@ -119,16 +119,16 @@ const QuickServices = () => {
               <div className={`absolute inset-0 bg-gradient-to-br ${service.bgColor} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}></div>
               
               {/* Content */}
-              <div className="relative p-6 flex flex-col items-center justify-center text-center min-h-[120px]">
+              <div className="relative p-4 sm:p-6 flex flex-col items-center justify-center text-center min-h-[100px] sm:min-h-[120px]">
                 {/* Icon Container */}
-                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${service.bgColor} flex items-center justify-center mb-4 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110`}>
+                <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br ${service.bgColor} flex items-center justify-center mb-3 sm:mb-4 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110`}>
                   <div className="text-white">
                     {service.icon}
                   </div>
                 </div>
                 
                 {/* Service Name */}
-                <p className="text-lg font-semibold arabic-text text-gray-800 dark:text-white group-hover:text-gray-900 dark:group-hover:text-white transition-colors duration-300">
+                <p className="text-sm sm:text-lg font-semibold arabic-text text-gray-800 dark:text-white group-hover:text-gray-900 dark:group-hover:text-white transition-colors duration-300">
                   {service.nameAr}
                 </p>
                 

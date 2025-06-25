@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from "react";
 import { Play, Pause, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -100,21 +99,21 @@ const SurahAudioPlayer = ({ surahNumber, surahName }: SurahAudioPlayerProps) => 
       <Button
         variant="ghost"
         size="lg"
-        className="w-14 h-14 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300"
+        className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300"
         onClick={handlePlaySurah}
         disabled={isLoading}
       >
         {isLoading ? (
-          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
         ) : isPlaying ? (
-          <Pause className="text-white" size={20} />
+          <Pause className="text-white" size={16} />
         ) : (
-          <Play className="text-white" size={20} />
+          <Play className="text-white" size={16} />
         )}
       </Button>
       <div className="text-white">
-        <p className="font-medium">تشغيل السورة كاملة</p>
-        <p className="text-sm text-white/80">{surahName}</p>
+        <p className="font-medium text-sm sm:text-base">تشغيل السورة كاملة</p>
+        <p className="text-xs sm:text-sm text-white/80">{surahName}</p>
       </div>
     </div>
   );

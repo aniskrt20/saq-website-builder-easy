@@ -70,7 +70,7 @@ const BottomNavigation = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                className="group relative flex flex-col items-center justify-center w-16 h-16 text-center transition-all duration-300 rounded-full"
+                className="group relative flex flex-col items-center justify-center w-14 h-14 sm:w-16 sm:h-16 text-center transition-all duration-300 rounded-full"
               >
                 <div
                   className={`flex flex-col items-center justify-center transition-all duration-300 transform-gpu ${
@@ -78,20 +78,20 @@ const BottomNavigation = () => {
                   }`}
                 >
                   <div
-                    className={`flex items-center justify-center w-11 h-11 rounded-full transition-all duration-300 transform-gpu ${
+                    className={`flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-full transition-all duration-300 transform-gpu ${
                       active
                         ? `bg-gradient-to-br ${item.color} text-white shadow-md scale-110`
                         : "text-gray-500 dark:text-gray-400 group-hover:bg-gray-200/60 dark:group-hover:bg-gray-800/60"
                     }`}
                   >
                     <Icon
-                      size={20}
+                      size={16}
                       className="transition-transform duration-300 group-hover:scale-110"
                     />
                   </div>
 
                   <span
-                    className={`text-xs mt-1.5 font-semibold arabic-text transition-all duration-300 ${
+                    className={`text-xs mt-1 sm:mt-1.5 font-semibold arabic-text transition-all duration-300 ${
                       active
                         ? `opacity-100 ${textColorClass} dark:text-white/90`
                         : "opacity-100 text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300"
