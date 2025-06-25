@@ -1,142 +1,23 @@
+
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuranApiChapter } from "@/services/api/quranApiService";
 import { useSuwar } from "@/services/api/quranServices";
 import BottomNavigation from "@/components/BottomNavigation";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronRight, Loader, BookOpen, Sparkles, Star, Heart, Download } from "lucide-react";
+import { ChevronRight, BookOpen, Sparkles, Star, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import VerseAudioPlayer from "@/components/quran/VerseAudioPlayer";
 import SurahAudioPlayer from "@/components/quran/SurahAudioPlayer";
-import { useToast } from "@/hooks/use-toast";
-import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
-import { Capacitor } from '@capacitor/core';
 
 const QuranSurahPage = () => {
   const { surahId } = useParams<{ surahId: string }>();
   const navigate = useNavigate();
   const surahNumber = surahId ? parseInt(surahId) : 1;
   const [highlightedVerse, setHighlightedVerse] = useState<number | null>(null);
-  const [isDownloading, setIsDownloading] = useState(false);
-  const [isDownloadingAll, setIsDownloadingAll] = useState(false);
-  const { toast } = useToast();
   
   const { data, isLoading, error } = useQuranApiChapter(surahNumber);
   const { data: suwarData } = useSuwar();
-
-  const downloadAudioFile = async (audioUrl: string, fileName: string): Promise<void> => {
-    try {
-      console.log('بدء تحميل الملف:', fileName);
-      
-      // تحميل الملف الصوتي
-      const response = await fetch(audioUrl);
-      if (!response.ok) {
-        throw new Error(`فشل في تحميل الملف: ${response.status}`);
-      }
-      
-      const arrayBuffer = await response.arrayBuffer();
-      const base64Data = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
-      
-      if (Capacitor.isNativePlatform()) {
-        // حفظ الملف على الجهاز باستخدام Capacitor
-        const result = await Filesystem.writeFile({
-          path: `القرآن الكريم/${fileName}`,
-          data: base64Data,
-          directory: Directory.Documents,
-          encoding: Encoding.UTF8
-        });
-        
-        console.log('تم حفظ الملف في:', result.uri);
-      } else {
-        // للمتصفحات العادية
-        const blob = new Blob([arrayBuffer], { type: 'audio/mpeg' });
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-      }
-    } catch (error) {
-      console.error('خطأ في تحميل الملف:', error);
-      throw error;
-    }
-  };
-
-  const handleDownloadCurrentSurah = async () => {
-    if (!data?.chapter) return;
-    
-    setIsDownloading(true);
-    try {
-      const audioUrl = `https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${data.chapter.id}.mp3`;
-      const fileName = `سورة_${data.chapter.name_arabic}.mp3`;
-      
-      await downloadAudioFile(audioUrl, fileName);
-      
-      toast({
-        title: "✅ تم التحميل بنجاح",
-        description: `تم تحميل سورة ${data.chapter.name_arabic} وحفظها في مجلد "القرآن الكريم"`,
-      });
-    } catch (error) {
-      console.error('خطأ عام في التحميل:', error);
-      toast({
-        title: "❌ خطأ في التحميل",
-        description: "فشل في تحميل السورة، يرجى التأكد من الاتصال بالإنترنت والمحاولة مرة أخرى",
-        variant: "destructive",
-      });
-    } finally {
-      setIsDownloading(false);
-    }
-  };
-
-  const handleDownloadAllSurahs = async () => {
-    if (!suwarData || !window.confirm("هل تريد تحميل جميع السور؟ قد يستغرق هذا وقتاً طويلاً.")) {
-      return;
-    }
-
-    setIsDownloadingAll(true);
-    let successCount = 0;
-    
-    try {
-      for (let i = 1; i <= 114; i++) {
-        try {
-          const surah = suwarData.find(s => s.id === i);
-          const surahName = surah ? surah.name : `السورة_${i}`;
-          const audioUrl = `https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${i}.mp3`;
-          const fileName = `${surahName}.mp3`;
-          
-          await downloadAudioFile(audioUrl, fileName);
-          successCount++;
-          
-          // تحديث المستخدم بالتقدم
-          toast({
-            title: `📥 جاري التحميل ${successCount}/114`,
-            description: `تم تحميل ${surahName}`,
-          });
-          
-          // انتظار قصير بين التحميلات
-          await new Promise(resolve => setTimeout(resolve, 1000));
-        } catch (error) {
-          console.error(`فشل تحميل السورة ${i}:`, error);
-        }
-      }
-      
-      toast({
-        title: "🎉 اكتمل التحميل!",
-        description: `تم تحميل ${successCount} سورة من أصل 114 سورة بنجاح`,
-      });
-    } catch (error) {
-      toast({
-        title: "❌ خطأ في التحميل",
-        description: "حدث خطأ أثناء تحميل السور",
-        variant: "destructive",
-      });
-    } finally {
-      setIsDownloadingAll(false);
-    }
-  };
 
   const handleBack = () => {
     navigate("/quran");
@@ -335,27 +216,6 @@ const QuranSurahPage = () => {
                     surahNumber={surahNumber} 
                     surahName={chapter.name_arabic}
                   />
-
-                  {/* Download Current Surah Button */}
-                  <div className="mt-6">
-                    <Button
-                      onClick={handleDownloadCurrentSurah}
-                      disabled={isDownloading}
-                      className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white border-0 rounded-xl px-6 py-3 font-medium transition-all duration-300 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isDownloading ? (
-                        <>
-                          <Loader className="animate-spin mr-2" size={18} />
-                          جاري التحميل...
-                        </>
-                      ) : (
-                        <>
-                          <Download className="mr-2" size={18} />
-                          📱 تحميل سورة {chapter.name_arabic}
-                        </>
-                      )}
-                    </Button>
-                  </div>
                 </div>
               </div>
             </div>
@@ -455,30 +315,6 @@ const QuranSurahPage = () => {
               )}
             </CardContent>
           </Card>
-        </div>
-
-        {/* Download All Surahs Button */}
-        <div className="mt-10 text-center">
-          <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl blur opacity-20"></div>
-            <Button
-              onClick={handleDownloadAllSurahs}
-              disabled={isDownloadingAll}
-              className="relative bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0 rounded-xl px-8 py-4 font-bold text-lg transition-all duration-300 hover:scale-105 shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isDownloadingAll ? (
-                <>
-                  <Loader className="animate-spin mr-3" size={24} />
-                  جاري تحميل جميع السور...
-                </>
-              ) : (
-                <>
-                  <Download className="mr-3" size={24} />
-                  📱 تحميل كل السور
-                </>
-              )}
-            </Button>
-          </div>
         </div>
       </div>
       

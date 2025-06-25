@@ -4,16 +4,13 @@ import BottomNavigation from "@/components/BottomNavigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink } from "@/components/ui/pagination";
-import { ChevronRight, Search, BookOpen, Star, Sparkles, Volume2, Heart, Download } from "lucide-react";
+import { ChevronRight, Search, BookOpen, Star, Sparkles, Volume2 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
-import OfflineDownloadManager from "@/components/quran/OfflineDownloadManager";
 
 const FullQuranPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [downloadManagerOpen, setDownloadManagerOpen] = useState(false);
   const { data: quranData, isLoading, error } = useQuranData();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -149,11 +146,11 @@ const FullQuranPage = () => {
       </div>
 
       <div className="max-w-6xl mx-auto px-6 py-10">
-        {/* Modern Search and Download Button */}
+        {/* Modern Search */}
         <div className="relative group mb-10">
           <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-2xl blur opacity-20 group-hover:opacity-30 transition duration-700"></div>
           <div className="relative bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/40 p-6">
-            <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+            <div className="flex justify-center">
               <div className="flex-1 max-w-lg">
                 <div className="relative">
                   <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-400 rounded-xl blur opacity-20"></div>
@@ -169,15 +166,6 @@ const FullQuranPage = () => {
                   </div>
                 </div>
               </div>
-              
-              {/* زر التحميل للاستخدام بدون اتصال */}
-              <Button
-                onClick={() => setDownloadManagerOpen(true)}
-                className="rounded-xl px-6 py-4 font-medium transition-all duration-300 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white border-0 shadow-lg hover:shadow-xl hover:scale-105"
-              >
-                <Download size={20} className="ml-2" />
-                تحميل للاستخدام بدون اتصال
-              </Button>
             </div>
           </div>
         </div>
@@ -267,6 +255,7 @@ const FullQuranPage = () => {
           </>
         )}
 
+        {/* No Results Message */}
         {filteredSurahs.length === 0 && !isLoading && !error && (
           <div className="text-center py-20">
             <div className="relative group">
@@ -279,12 +268,6 @@ const FullQuranPage = () => {
           </div>
         )}
       </div>
-      
-      {/* مدير التحميل */}
-      <OfflineDownloadManager 
-        open={downloadManagerOpen}
-        onOpenChange={setDownloadManagerOpen}
-      />
       
       <div className="pb-20">
         <BottomNavigation />
