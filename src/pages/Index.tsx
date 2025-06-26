@@ -1,3 +1,4 @@
+
 import React from "react";
 import Header from "@/components/Header";
 import PrayerTimes from "@/components/PrayerTimes";
@@ -63,45 +64,48 @@ const Index = () => {
         <div className="absolute bottom-1/4 left-1/3 w-32 h-32 bg-gradient-to-r from-cyan-200/20 to-blue-200/20 dark:from-cyan-700/10 dark:to-blue-700/10 rounded-full blur-2xl animate-float" style={{animationDelay: '3s'}}></div>
       </div>
 
-      {/* Content with improved spacing */}
-      <div className="relative z-10">
+      {/* Content with improved spacing and centering */}
+      <div className="relative z-10 flex flex-col min-h-screen">
         {/* Enhanced Header */}
         <div className="pt-6 px-4 pb-2">
-          <div className="transform hover:scale-[1.02] transition-all duration-500">
+          <div className="transform hover:scale-[1.02] transition-all duration-500 max-w-4xl mx-auto">
             <Header />
           </div>
         </div>
 
-        <div className="container mx-auto px-4 py-6 space-y-8">
-          {/* Prayer Times - Enhanced Card */}
-          <div className="transform hover:scale-[1.02] transition-all duration-500">
-            <div className="relative overflow-hidden rounded-3xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-emerald-200/50 dark:border-emerald-700/30 shadow-2xl shadow-emerald-500/10">
-              {/* Decorative Top Border */}
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400"></div>
-              <div className="p-1">
-                <PrayerTimes />
-              </div>
-            </div>
-          </div>
-
-          {/* Grid Layout for Services and Quote - Improved Responsiveness */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-            {/* Quick Services - Enhanced */}
+        {/* Main Content - Centered */}
+        <div className="flex-1 flex flex-col justify-center">
+          <div className="w-full max-w-6xl mx-auto px-4 py-6 space-y-8">
+            {/* Prayer Times - Enhanced Card */}
             <div className="transform hover:scale-[1.02] transition-all duration-500">
-              <div className="relative overflow-hidden rounded-3xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-blue-200/50 dark:border-blue-700/30 shadow-2xl shadow-blue-500/10">
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400"></div>
-                <div className="p-6">
-                  <QuickServices />
+              <div className="relative overflow-hidden rounded-3xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-emerald-200/50 dark:border-emerald-700/30 shadow-2xl shadow-emerald-500/10">
+                {/* Decorative Top Border */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400"></div>
+                <div className="p-1">
+                  <PrayerTimes />
                 </div>
               </div>
             </div>
 
-            {/* Daily Quote - Enhanced */}
-            <div className="transform hover:scale-[1.02] transition-all duration-500">
-              <div className="relative overflow-hidden rounded-3xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-purple-200/50 dark:border-purple-700/30 shadow-2xl shadow-purple-500/10">
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-400 via-pink-400 to-rose-400"></div>
-                <div className="p-6">
-                  <DailyQuote />
+            {/* Grid Layout for Services and Quote - Improved Responsiveness */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+              {/* Quick Services - Enhanced */}
+              <div className="transform hover:scale-[1.02] transition-all duration-500">
+                <div className="relative overflow-hidden rounded-3xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-blue-200/50 dark:border-blue-700/30 shadow-2xl shadow-blue-500/10">
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400"></div>
+                  <div className="p-6">
+                    <QuickServices />
+                  </div>
+                </div>
+              </div>
+
+              {/* Daily Quote - Enhanced */}
+              <div className="transform hover:scale-[1.02] transition-all duration-500">
+                <div className="relative overflow-hidden rounded-3xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-purple-200/50 dark:border-purple-700/30 shadow-2xl shadow-purple-500/10">
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-400 via-pink-400 to-rose-400"></div>
+                  <div className="p-6">
+                    <DailyQuote />
+                  </div>
                 </div>
               </div>
             </div>

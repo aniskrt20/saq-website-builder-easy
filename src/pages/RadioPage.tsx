@@ -37,26 +37,30 @@ const RadioPage = () => {
       {/* Glass Morphism Overlay */}
       <div className="fixed inset-0 backdrop-blur-sm bg-gradient-to-br from-black/10 via-transparent to-black/5"></div>
 
-      <div className="relative z-10">
+      {/* Content with proper centering */}
+      <div className="relative z-10 flex flex-col min-h-screen">
         {/* Modern Floating Header */}
         <div className="pt-4 px-4">
-          <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl shadow-2xl mx-4">
+          <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl shadow-2xl max-w-4xl mx-auto">
             <Header title="الإذاعات" />
           </div>
         </div>
 
-        <div className="container mx-auto px-4 py-8 space-y-6">
-          {/* Radio Stations - Featured Card */}
-          <div className="backdrop-blur-xl bg-gradient-to-br from-emerald-400/20 to-teal-600/20 border border-emerald-300/30 rounded-3xl shadow-2xl p-6 transform hover:scale-105 transition-all duration-500 hover:shadow-emerald-500/25">
-            <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-2xl p-4">
-              <RadiosList />
+        {/* Main Content - Centered */}
+        <div className="flex-1 flex flex-col justify-center">
+          <div className="w-full max-w-6xl mx-auto px-4 py-8 space-y-6">
+            {/* Radio Stations - Featured Card */}
+            <div className="backdrop-blur-xl bg-gradient-to-br from-emerald-400/20 to-teal-600/20 border border-emerald-300/30 rounded-3xl shadow-2xl p-6 transform hover:scale-105 transition-all duration-500 hover:shadow-emerald-500/25">
+              <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-2xl p-4">
+                <RadiosList />
+              </div>
             </div>
-          </div>
 
-          {/* Live TV - Elegant Card */}
-          <div className="backdrop-blur-xl bg-gradient-to-br from-purple-400/20 to-pink-600/20 border border-purple-300/30 rounded-3xl shadow-2xl p-6 transform hover:scale-105 transition-all duration-500 hover:shadow-purple-500/25">
-            <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-2xl p-4">
-              <LiveTVList />
+            {/* Live TV - Elegant Card */}
+            <div className="backdrop-blur-xl bg-gradient-to-br from-purple-400/20 to-pink-600/20 border border-purple-300/30 rounded-3xl shadow-2xl p-6 transform hover:scale-105 transition-all duration-500 hover:shadow-purple-500/25">
+              <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-2xl p-4">
+                <LiveTVList />
+              </div>
             </div>
           </div>
         </div>
