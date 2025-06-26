@@ -8,7 +8,6 @@ import { ChevronRight, BookOpen, Star, Heart, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import VerseAudioPlayer from "@/components/quran/VerseAudioPlayer";
 import SurahAudioPlayer from "@/components/quran/SurahAudioPlayer";
-import VerseImageDisplay from "@/components/quran/VerseImageDisplay";
 
 const QuranSurahPage = () => {
   const { surahId } = useParams<{ surahId: string }>();
@@ -331,16 +330,6 @@ const QuranSurahPage = () => {
                                   <Bookmark className="text-white" size={12} />
                                 </div>
                               </div>
-                            </div>
-                            
-                            {/* Verse Image Display */}
-                            <div className="mt-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                              <VerseImageDisplay 
-                                surahNumber={surahNumber}
-                                verseNumber={verse.id}
-                                size="sm"
-                                showControls={true}
-                              />
                             </div>
                           </div>
                           
