@@ -20,18 +20,15 @@ const SurahAudioPlayer = ({ surahNumber, surahName, onReciterChange }: SurahAudi
   const { data: reciters } = useReciters({ language: "ar" });
 
   const getAudioUrl = (reciterId: number, surahNum: number) => {
-    const selectedReciter = reciters?.find(r => r.id === reciterId);
-    if (!selectedReciter || !selectedReciter.moshaf || selectedReciter.moshaf.length === 0) {
-      // Fallback to a default URL if no reciter found
-      return `https://server8.mp3quran.net/afs/${surahNum.toString().padStart(3, '0')}.mp3`;
-    }
-
-    // Use the first moshaf's server URL
-    const moshaf = selectedReciter.moshaf[0];
-    const paddedSurahNum = surahNum.toString().padStart(3, '0');
+    // Use Islamic Network CDN for surah audio
+    const bitrate = 128; // Default bitrate
+    const edition = "ar.alafasy"; // Default edition
     
-    // Construct the URL based on the server and surah number
-    return `${moshaf.server}${paddedSurahNum}.mp3`;
+    const islamicNetworkUrl = `https://cdn.islamic.network/quran/audio-surah/${bitrate}/${edition}/${surahNum}.mp3`;
+    
+    console.log(`Using Islamic Network CDN for surah ${surahNum}: ${islamicNetworkUrl}`);
+    
+    return islamicNetworkUrl;
   };
 
   const handlePlaySurah = async () => {
@@ -52,7 +49,7 @@ const SurahAudioPlayer = ({ surahNumber, surahName, onReciterChange }: SurahAudi
 
       const audioUrl = getAudioUrl(selectedReciterId, surahNumber);
       
-      console.log(`Playing full surah audio with reciter ${selectedReciterId}: ${audioUrl}`);
+      console.log(`Playing full surah audio: ${audioUrl}`);
       
       const audio = new Audio(audioUrl);
       audioRef.current = audio;
@@ -76,8 +73,8 @@ const SurahAudioPlayer = ({ surahNumber, surahName, onReciterChange }: SurahAudi
         setIsPlaying(false);
         setIsLoading(false);
         
-        // Try alternative source
-        const alternativeUrl = `https://server8.mp3quran.net/afs/${surahNumber.toString().padStart(3, '0')}.mp3`;
+        // Try alternative source with different bitrate
+        const alternativeUrl = `https://cdn.islamic.network/quran/audio-surah/64/ar.alafasy/${surahNumber}.mp3`;
         console.log(`Trying alternative surah audio source: ${alternativeUrl}`);
         
         const alternativeAudio = new Audio(alternativeUrl);

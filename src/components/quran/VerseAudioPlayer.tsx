@@ -23,26 +23,43 @@ const VerseAudioPlayer = ({
   
   const { data: reciters } = useReciters({ language: "ar" });
 
-  const getVerseAudioUrl = (reciterId: number, surahNum: number, verseNum: number) => {
-    const selectedReciter = reciters?.find(r => r.id === reciterId);
-    const surahPadded = surahNum.toString().padStart(3, '0');
-    const versePadded = verseNum.toString().padStart(3, '0');
+  // Calculate global ayah number for the verse
+  const calculateGlobalAyahNumber = (surahNum: number, verseNum: number) => {
+    // Array of verse counts for each surah
+    const surahVerseCounts = [
+      7, 286, 200, 176, 120, 165, 206, 75, 129, 109, 123, 111, 43, 52, 99, 128, 111, 110, 98, 135,
+      112, 78, 118, 64, 77, 227, 93, 88, 69, 60, 34, 30, 73, 54, 45, 83, 182, 88, 75, 85, 54, 53,
+      89, 59, 37, 35, 38, 29, 18, 45, 60, 49, 62, 55, 78, 96, 29, 22, 24, 13, 14, 11, 11, 18, 12,
+      12, 30, 52, 52, 44, 28, 28, 20, 56, 40, 31, 50, 40, 46, 42, 29, 19, 36, 25, 22, 17, 19, 26,
+      30, 20, 15, 21, 11, 8, 8, 19, 5, 8, 8, 11, 11, 8, 3, 9, 5, 4, 7, 3, 6, 3, 5, 4, 5, 6
+    ];
     
-    if (selectedReciter && selectedReciter.moshaf && selectedReciter.moshaf.length > 0) {
-      // Try to find a moshaf that supports individual verses (usually has "ayah" in the name or type)
-      const verseMoshaf = selectedReciter.moshaf.find(m => 
-        m.moshaf_type && 
-        typeof m.moshaf_type === 'string' && 
-        (m.moshaf_type.includes('ayah') || m.moshaf_type.includes('verse'))
-      );
-      
-      if (verseMoshaf) {
-        return `${verseMoshaf.server}${surahPadded}${versePadded}.mp3`;
-      }
+    let globalAyahNumber = 0;
+    
+    // Sum up all verses from surahs before the current one
+    for (let i = 0; i < surahNum - 1; i++) {
+      globalAyahNumber += surahVerseCounts[i];
     }
     
-    // Fallback to everyayah.com for individual verses
-    return `https://everyayah.com/data/Abdul_Basit_Murattal_64kbps/${surahPadded}${versePadded}.mp3`;
+    // Add the current verse number
+    globalAyahNumber += verseNum;
+    
+    return globalAyahNumber;
+  };
+
+  const getVerseAudioUrl = (reciterId: number, surahNum: number, verseNum: number) => {
+    const selectedReciter = reciters?.find(r => r.id === reciterId);
+    const globalAyahNumber = calculateGlobalAyahNumber(surahNum, verseNum);
+    
+    // Use Islamic Network CDN for verse audio
+    const bitrate = 128; // Default bitrate
+    const edition = "ar.alafasy"; // Default edition
+    
+    const islamicNetworkUrl = `https://cdn.islamic.network/quran/audio/${bitrate}/${edition}/${globalAyahNumber}.mp3`;
+    
+    console.log(`Using Islamic Network CDN for verse ${surahNum}:${verseNum} (global ${globalAyahNumber}): ${islamicNetworkUrl}`);
+    
+    return islamicNetworkUrl;
   };
 
   const handlePlayVerse = async () => {
@@ -63,7 +80,7 @@ const VerseAudioPlayer = ({
 
       const audioUrl = getVerseAudioUrl(selectedReciterId, surahNumber, verseNumber);
       
-      console.log(`Playing individual verse audio with reciter ${selectedReciterId}: ${audioUrl}`);
+      console.log(`Playing individual verse audio: ${audioUrl}`);
       
       const audio = new Audio(audioUrl);
       audioRef.current = audio;
@@ -87,8 +104,8 @@ const VerseAudioPlayer = ({
         setIsPlaying(false);
         setIsLoading(false);
         
-        // Try alternative source for individual verse
-        const alternativeUrl = `https://everyayah.com/data/Abdul_Basit_Murattal_64kbps/${surahNumber.toString().padStart(3, '0')}${verseNumber.toString().padStart(3, '0')}.mp3`;
+        // Try alternative source with different bitrate
+        const alternativeUrl = `https://cdn.islamic.network/quran/audio/64/ar.alafasy/${calculateGlobalAyahNumber(surahNumber, verseNumber)}.mp3`;
         console.log(`Trying alternative verse audio source: ${alternativeUrl}`);
         
         const alternativeAudio = new Audio(alternativeUrl);
