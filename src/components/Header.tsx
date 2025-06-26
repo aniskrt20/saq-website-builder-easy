@@ -1,18 +1,19 @@
-
 import React, { useEffect, useState } from "react";
 import { useGeoLocation } from "@/hooks/use-location";
 import { getHijriDate } from "@/data/prayers";
 import { MapPin, Moon, Loader2 } from "lucide-react";
-
 interface HeaderProps {
   title?: string;
 }
-
-const Header: React.FC<HeaderProps> = ({ title = "صدقة جارية" }) => {
-  const { location, loading } = useGeoLocation();
+const Header: React.FC<HeaderProps> = ({
+  title = "صدقة جارية"
+}) => {
+  const {
+    location,
+    loading
+  } = useGeoLocation();
   const [hijriDate, setHijriDate] = useState<string>("");
   const [isLoadingDate, setIsLoadingDate] = useState<boolean>(true);
-  
   useEffect(() => {
     // Function to update the Hijri date
     const updateHijriDate = async () => {
@@ -26,18 +27,17 @@ const Header: React.FC<HeaderProps> = ({ title = "صدقة جارية" }) => {
         setIsLoadingDate(false);
       }
     };
-    
+
     // Update Hijri date immediately
     updateHijriDate();
-    
+
     // Set up a daily refresh for the Hijri date
     const now = new Date();
     const tomorrow = new Date(now);
     tomorrow.setDate(tomorrow.getDate() + 1);
     tomorrow.setHours(0, 0, 0, 0);
-    
     const timeUntilMidnight = tomorrow.getTime() - now.getTime();
-    
+
     // Set timeout to update at midnight, then set interval for daily updates
     const timer = setTimeout(() => {
       updateHijriDate();
@@ -45,12 +45,9 @@ const Header: React.FC<HeaderProps> = ({ title = "صدقة جارية" }) => {
       const dailyInterval = setInterval(updateHijriDate, 24 * 60 * 60 * 1000);
       return () => clearInterval(dailyInterval);
     }, timeUntilMidnight);
-    
     return () => clearTimeout(timer);
   }, []);
-
-  return (
-    <div className="w-full islamic-header text-white p-4 sm:p-6 rounded-b-2xl relative overflow-hidden">
+  return <div className="w-full islamic-header text-white p-4 sm:p-6 rounded-b-2xl relative overflow-hidden">
       {/* Decorative elements */}
       <div className="absolute top-0 left-0 w-full h-1 bg-islamic-secondary/50"></div>
       <div className="absolute bottom-0 left-0 w-full h-1 bg-islamic-secondary/30"></div>
@@ -58,21 +55,13 @@ const Header: React.FC<HeaderProps> = ({ title = "صدقة جارية" }) => {
       <div className="text-center pb-3 sm:pb-4 relative z-10">
         <h1 className="text-xl sm:text-2xl font-bold">{title}</h1>
         {/* البسملة تحت اسم التطبيق مباشرة */}
-        <h2 className="arabic-text text-lg sm:text-xl mt-2 sm:mt-3">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيمِ</h2>
+        <h2 className="arabic-text text-lg sm:text-xl mt-2 sm:mt-3">                                                             بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيمِ</h2>
         <div className="flex items-center justify-center mt-2 text-xs sm:text-sm opacity-80">
           <MapPin size={14} className="mr-1" />
           <span>
-            {loading ? (
-              <span className="flex items-center">
+            {loading ? <span className="flex items-center">
                 جاري تحديد الموقع... <Loader2 size={10} className="ml-1 animate-spin" />
-              </span>
-            ) : location?.error ? (
-              <span>تعذر تحديد الموقع</span>
-            ) : location?.latitude ? (
-              <span>تم تحديد الموقع بنجاح</span>
-            ) : (
-              <span>يرجى السماح بتحديد الموقع</span>
-            )}
+              </span> : location?.error ? <span>تعذر تحديد الموقع</span> : location?.latitude ? <span>تم تحديد الموقع بنجاح</span> : <span>يرجى السماح بتحديد الموقع</span>}
           </span>
         </div>
       </div>
@@ -87,16 +76,12 @@ const Header: React.FC<HeaderProps> = ({ title = "صدقة جارية" }) => {
         <div className="text-center">
           <p className="text-xs sm:text-sm mt-2 arabic-text flex items-center justify-center">
             <Moon size={12} className="mx-1 text-islamic-secondary" />
-            {isLoadingDate ? (
-              <span className="flex items-center">
+            {isLoadingDate ? <span className="flex items-center">
                 جاري تحميل التاريخ... <Loader2 size={8} className="mr-1 animate-spin" />
-              </span>
-            ) : hijriDate}
+              </span> : hijriDate}
           </p>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Header;
