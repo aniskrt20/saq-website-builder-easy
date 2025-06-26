@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -53,6 +54,10 @@ const App = () => {
     // إزالة الكلاس لضمان أن الوضع الفاتح هو الافتراضي
     document.documentElement.classList.remove('dark');
     
+    // تطبيق اتجاه RTL
+    document.documentElement.setAttribute('dir', 'rtl');
+    document.body.setAttribute('dir', 'rtl');
+    
     // تخزين التفضيل في localStorage
     if (!localStorage.getItem('theme')) {
       localStorage.setItem('theme', 'light');
@@ -64,30 +69,32 @@ const App = () => {
   console.log("App rendering...");
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/privacy" element={<PrivacyPolicyPage />} />
-            <Route path="/copyright" element={<CopyrightPage />} />
-            <Route path="/adhkar" element={<AdhkarPage />} />
-            <Route path="/hadith" element={<HadithPage />} />
-            <Route path="/tasbih" element={<TasbihPage />} />
-            <Route path="/duas" element={<DuasPage />} />
-            <Route path="/radio" element={<RadioPage />} />
-            <Route path="/videos" element={<VideosPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-            <Route path="/quran" element={<FullQuranPage />} />
-            <Route path="/quran/surah/:surahId" element={<QuranSurahPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <div dir="rtl">
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/privacy" element={<PrivacyPolicyPage />} />
+              <Route path="/copyright" element={<CopyrightPage />} />
+              <Route path="/adhkar" element={<AdhkarPage />} />
+              <Route path="/hadith" element={<HadithPage />} />
+              <Route path="/tasbih" element={<TasbihPage />} />
+              <Route path="/duas" element={<DuasPage />} />
+              <Route path="/radio" element={<RadioPage />} />
+              <Route path="/videos" element={<VideosPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/quran" element={<FullQuranPage />} />
+              <Route path="/quran/surah/:surahId" element={<QuranSurahPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </div>
   );
 };
 
