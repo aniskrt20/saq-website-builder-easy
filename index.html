@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
   <head>
@@ -59,7 +60,7 @@
             enable: true,
             size: 'large',
             theme: 'default',
-            position: 'bottom-right',
+            position: 'bottom-left',
           },
           allowLocalhostAsSecureOrigin: true
         });
@@ -79,13 +80,13 @@
     </script>
   </head>
 
-  <body>
+  <body dir="rtl">
     <div id="root"></div>
 
     <!-- PWA Installation Banner -->
     <div id="pwa-install-banner" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; background: #27ae60; color: white; padding: 16px; text-align: center; z-index: 1000;">
       <p style="margin: 0 0 8px 0; font-size: 14px;">قم بتثبيت التطبيق على هاتفك للحصول على تجربة أفضل</p>
-      <button id="pwa-install-btn" style="background: white; color: #27ae60; border: none; padding: 8px 16px; border-radius: 4px; font-weight: bold; margin-left: 8px;">تثبيت</button>
+      <button id="pwa-install-btn" style="background: white; color: #27ae60; border: none; padding: 8px 16px; border-radius: 4px; font-weight: bold; margin-right: 8px;">تثبيت</button>
       <button id="pwa-dismiss-btn" style="background: transparent; color: white; border: 1px solid white; padding: 8px 16px; border-radius: 4px;">إغلاق</button>
     </div>
 

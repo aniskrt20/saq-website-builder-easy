@@ -114,5 +114,25 @@ export default {
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [
+		require("tailwindcss-animate"),
+		// إضافة plugin للـ RTL
+		function({ addUtilities }: { addUtilities: any }) {
+			const newUtilities = {
+				'.rtl': {
+					direction: 'rtl',
+				},
+				'.ltr': {
+					direction: 'ltr',
+				},
+				'.text-start': {
+					'text-align': 'start',
+				},
+				'.text-end': {
+					'text-align': 'end',
+				},
+			}
+			addUtilities(newUtilities, ['responsive'])
+		}
+	],
 } satisfies Config;
