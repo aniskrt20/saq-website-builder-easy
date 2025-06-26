@@ -1,6 +1,8 @@
+
 import React, { useState, useRef } from "react";
 import { Play, Pause, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useReciters } from "@/services/api/reciterServices";
 import ReciterSelector from "./ReciterSelector";
 
 interface SurahAudioPlayerProps {
@@ -12,35 +14,24 @@ interface SurahAudioPlayerProps {
 const SurahAudioPlayer = ({ surahNumber, surahName, onReciterChange }: SurahAudioPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedReciterId, setSelectedReciterId] = useState(1); // Default: عبد الباسط عبد الصمد
+  const [selectedReciterId, setSelectedReciterId] = useState(1);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  
+  const { data: reciters } = useReciters({ language: "ar" });
 
   const getAudioUrl = (reciterId: number, surahNum: number) => {
-    // أشهر القراء مع مصادر صوتية موثوقة
-    switch (reciterId) {
-      case 1: // عبد الباسط عبد الصمد
-        return `https://server8.mp3quran.net/afs/${surahNum.toString().padStart(3, '0')}.mp3`;
-      case 2: // ماهر المعيقلي  
-        return `https://server12.mp3quran.net/maher/${surahNum.toString().padStart(3, '0')}.mp3`;
-      case 3: // مشاري العفاسي
-        return `https://server13.mp3quran.net/husr/${surahNum.toString().padStart(3, '0')}.mp3`;
-      case 4: // سعد الغامدي
-        return `https://server7.mp3quran.net/s_gmd/${surahNum.toString().padStart(3, '0')}.mp3`;
-      case 5: // أحمد العجمي
-        return `https://server10.mp3quran.net/ajm/${surahNum.toString().padStart(3, '0')}.mp3`;
-      case 6: // محمد صديق المنشاوي
-        return `https://server14.mp3quran.net/ms/${surahNum.toString().padStart(3, '0')}.mp3`;
-      case 7: // عبد الرحمن السديس
-        return `https://server11.mp3quran.net/sds/${surahNum.toString().padStart(3, '0')}.mp3`;
-      case 8: // ياسر الدوسري
-        return `https://server6.mp3quran.net/tbr/${surahNum.toString().padStart(3, '0')}.mp3`;
-      case 9: // ناصر القطامي
-        return `https://server9.mp3quran.net/qatami/${surahNum.toString().padStart(3, '0')}.mp3`;
-      case 10: // خالد الجليل
-        return `https://server5.mp3quran.net/jaleel/${surahNum.toString().padStart(3, '0')}.mp3`;
-      default:
-        return `https://server8.mp3quran.net/afs/${surahNum.toString().padStart(3, '0')}.mp3`;
+    const selectedReciter = reciters?.find(r => r.id === reciterId);
+    if (!selectedReciter || !selectedReciter.moshaf || selectedReciter.moshaf.length === 0) {
+      // Fallback to a default URL if no reciter found
+      return `https://server8.mp3quran.net/afs/${surahNum.toString().padStart(3, '0')}.mp3`;
     }
+
+    // Use the first moshaf's server URL
+    const moshaf = selectedReciter.moshaf[0];
+    const paddedSurahNum = surahNum.toString().padStart(3, '0');
+    
+    // Construct the URL based on the server and surah number
+    return `${moshaf.server}${paddedSurahNum}.mp3`;
   };
 
   const handlePlaySurah = async () => {
@@ -86,7 +77,7 @@ const SurahAudioPlayer = ({ surahNumber, surahName, onReciterChange }: SurahAudi
         setIsLoading(false);
         
         // Try alternative source
-        const alternativeUrl = `https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${surahNumber}.mp3`;
+        const alternativeUrl = `https://server8.mp3quran.net/afs/${surahNumber.toString().padStart(3, '0')}.mp3`;
         console.log(`Trying alternative surah audio source: ${alternativeUrl}`);
         
         const alternativeAudio = new Audio(alternativeUrl);

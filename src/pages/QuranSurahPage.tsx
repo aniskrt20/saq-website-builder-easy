@@ -4,7 +4,7 @@ import { useQuranApiChapter } from "@/services/api/quranApiService";
 import { useSuwar } from "@/services/api/quranServices";
 import BottomNavigation from "@/components/BottomNavigation";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronRight, BookOpen, Sparkles, Star, Heart } from "lucide-react";
+import { ChevronRight, BookOpen, Star, Heart, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import VerseAudioPlayer from "@/components/quran/VerseAudioPlayer";
 import SurahAudioPlayer from "@/components/quran/SurahAudioPlayer";
@@ -14,7 +14,7 @@ const QuranSurahPage = () => {
   const navigate = useNavigate();
   const surahNumber = surahId ? parseInt(surahId) : 1;
   const [highlightedVerse, setHighlightedVerse] = useState<number | null>(null);
-  const [selectedReciterId, setSelectedReciterId] = useState(1); // Default: عبد الباسط عبد الصمد
+  const [selectedReciterId, setSelectedReciterId] = useState(1);
   
   const { data, isLoading, error } = useQuranApiChapter(surahNumber);
   const { data: suwarData } = useSuwar();
@@ -30,47 +30,50 @@ const QuranSurahPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
-        {/* Modern Loading Header */}
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 relative overflow-hidden">
+        {/* Decorative Islamic Pattern Background */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="w-full h-full bg-islamic-pattern"></div>
+        </div>
+        
+        {/* Elegant Header */}
         <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600"></div>
-          <div className="absolute inset-0 bg-gradient-to-br from-transparent via-pink-500/20 to-orange-500/20"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-amber-700 via-yellow-600 to-amber-800"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-transparent via-amber-500/10 to-yellow-500/10"></div>
           
-          <div className="relative z-10 px-6 py-10">
-            <div className="max-w-6xl mx-auto">
-              <div className="flex items-center justify-between mb-8">
+          <div className="relative z-10 px-6 py-8">
+            <div className="max-w-4xl mx-auto">
+              <div className="flex items-center justify-between mb-6">
                 <button
                   onClick={handleBack}
                   className="group flex items-center gap-3 text-white/90 hover:text-white transition-all duration-300"
                 >
-                  <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-lg flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 border border-white/30">
-                    <ChevronRight size={20} />
+                  <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-all duration-300 border border-white/30">
+                    <ChevronRight size={18} />
                   </div>
-                  <span className="font-medium text-lg">العودة</span>
+                  <span className="font-medium">العودة</span>
                 </button>
                 
                 <div className="text-center text-white">
-                  <div className="flex items-center justify-center gap-3 mb-3">
-                    <Sparkles className="text-yellow-300 animate-pulse" size={28} />
-                    <h1 className="text-4xl font-bold arabic-text bg-gradient-to-r from-white to-yellow-200 bg-clip-text text-transparent">
-                      جاري التحميل
-                    </h1>
-                    <Sparkles className="text-yellow-300 animate-pulse animation-delay-2000" size={28} />
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <div className="w-8 h-8 rounded-full bg-yellow-400/30 flex items-center justify-center">
+                      <BookOpen className="text-yellow-200" size={16} />
+                    </div>
+                    <h1 className="text-2xl font-bold arabic-text">جاري التحميل</h1>
                   </div>
                 </div>
                 
-                <div className="w-20"></div>
+                <div className="w-16"></div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col justify-center items-center py-20">
+        <div className="flex flex-col justify-center items-center py-16">
           <div className="relative">
-            <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
-            <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-t-pink-400 rounded-full animate-spin animation-delay-2000"></div>
+            <div className="w-12 h-12 border-3 border-amber-200 border-t-amber-600 rounded-full animate-spin"></div>
           </div>
-          <span className="mt-6 text-gray-600 text-lg font-medium">جاري تحميل السورة الكريمة...</span>
+          <span className="mt-4 text-amber-700 text-lg font-medium arabic-text">جاري تحميل السورة الكريمة...</span>
         </div>
         
         <div className="pb-20">
@@ -141,78 +144,89 @@ const QuranSurahPage = () => {
   const { chapter, verses } = data;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
-      {/* Modern Floating Header */}
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 relative overflow-hidden">
+      {/* Authentic Islamic Pattern Background */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="w-full h-full bg-islamic-pattern"></div>
+      </div>
+      
+      {/* Decorative Corner Elements */}
+      <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-amber-600/20 to-transparent rounded-br-full"></div>
+      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-yellow-600/20 to-transparent rounded-bl-full"></div>
+      
+      {/* Elegant Mushaf Header */}
       <div className="relative">
-        {/* Background with animated gradients */}
-        <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600"></div>
-        <div className="absolute inset-0 bg-gradient-to-br from-transparent via-pink-500/20 to-orange-500/20"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-amber-700 via-yellow-600 to-amber-800"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-transparent via-amber-500/10 to-yellow-500/10"></div>
         
-        {/* Floating elements */}
-        <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl animate-pulse"></div>
-        <div className="absolute top-20 right-20 w-32 h-32 bg-yellow-300/20 rounded-full blur-2xl animate-bounce"></div>
-        <div className="absolute bottom-10 left-1/3 w-16 h-16 bg-blue-300/20 rounded-full blur-lg animate-pulse animation-delay-2000"></div>
+        {/* Decorative Border Pattern */}
+        <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-transparent via-yellow-400 to-transparent opacity-60"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-transparent via-yellow-400 to-transparent opacity-60"></div>
         
-        <div className="relative z-10 px-6 py-10">
-          <div className="max-w-6xl mx-auto">
+        <div className="relative z-10 px-6 py-8">
+          <div className="max-w-4xl mx-auto">
             {/* Navigation */}
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center justify-between mb-6">
               <button
                 onClick={handleBack}
                 className="group flex items-center gap-3 text-white/90 hover:text-white transition-all duration-300"
               >
-                <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-lg flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 border border-white/30">
-                  <ChevronRight size={20} />
+                <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-all duration-300 border border-white/30">
+                  <ChevronRight size={18} />
                 </div>
-                <span className="font-medium text-lg">العودة</span>
+                <span className="font-medium">العودة</span>
               </button>
               
               <div className="text-center text-white">
-                <div className="flex items-center justify-center gap-3 mb-3">
-                  <Sparkles className="text-yellow-300 animate-pulse" size={28} />
-                  <h1 className="text-4xl font-bold arabic-text bg-gradient-to-r from-white to-yellow-200 bg-clip-text text-transparent">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <div className="w-8 h-8 rounded-full bg-yellow-400/30 flex items-center justify-center">
+                    <BookOpen className="text-yellow-200" size={16} />
+                  </div>
+                  <h1 className="text-2xl font-bold arabic-text bg-gradient-to-r from-white to-yellow-200 bg-clip-text text-transparent">
                     {chapter.name_arabic}
                   </h1>
-                  <Sparkles className="text-yellow-300 animate-pulse animation-delay-2000" size={28} />
                 </div>
-                <p className="text-white/80 text-lg font-medium">
+                <p className="text-white/80 text-sm font-medium">
                   {chapter.translated_name.name} • {chapter.verses_count} آية • {chapter.revelation_place === "makkah" ? "مكية" : "مدنية"}
                 </p>
               </div>
               
-              <div className="w-20"></div>
+              <div className="w-16"></div>
             </div>
 
-            {/* Surah Info Card */}
-            <div className="relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600 rounded-3xl blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
-              <div className="relative bg-white/20 backdrop-blur-xl rounded-3xl p-8 border border-white/30 shadow-2xl">
+            {/* Surah Info with Authentic Design */}
+            <div className="relative">
+              <div className="absolute -inset-1 bg-gradient-to-r from-yellow-600/40 via-amber-600/40 to-yellow-600/40 rounded-2xl blur opacity-60"></div>
+              <div className="relative bg-white/20 backdrop-blur-xl rounded-2xl p-6 border border-white/30 shadow-xl">
                 <div className="text-center text-white">
-                  <div className="flex items-center justify-center gap-4 mb-6">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg">
-                      <span className="text-white font-bold text-xl">{chapter.id}</span>
+                  <div className="flex items-center justify-center gap-4 mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-500 flex items-center justify-center shadow-lg border-2 border-white/30">
+                      <span className="text-white font-bold text-lg arabic-text">{chapter.id}</span>
                     </div>
                     <div className="flex-1">
-                      <h2 className="text-3xl font-bold arabic-text bg-gradient-to-r from-white to-yellow-200 bg-clip-text text-transparent mb-2">
+                      <h2 className="text-xl font-bold arabic-text bg-gradient-to-r from-white to-yellow-200 bg-clip-text text-transparent mb-1">
                         سورة {chapter.name_arabic}
                       </h2>
-                      <p className="text-white/90 text-lg">{chapter.translated_name.name}</p>
+                      <p className="text-white/90 text-sm">{chapter.translated_name.name}</p>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-r from-red-400 to-pink-400 flex items-center justify-center shadow-md">
-                        <Heart className="text-white" size={18} />
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-r from-red-400 to-pink-400 flex items-center justify-center shadow-md">
+                        <Heart className="text-white" size={14} />
+                      </div>
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-400 to-cyan-400 flex items-center justify-center shadow-md">
+                        <Bookmark className="text-white" size={14} />
                       </div>
                     </div>
                   </div>
                   
-                  <div className="flex items-center justify-center gap-6 mb-6">
-                    <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 border border-white/30">
-                      <BookOpen className="text-yellow-300" size={18} />
-                      <span className="font-medium">{chapter.verses_count} آية</span>
+                  <div className="flex items-center justify-center gap-4 mb-4">
+                    <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 border border-white/30">
+                      <BookOpen className="text-yellow-300" size={14} />
+                      <span className="font-medium text-sm">{chapter.verses_count} آية</span>
                     </div>
-                    <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 border border-white/30">
-                      <Star className="text-blue-300" size={18} />
-                      <span className="font-medium">{chapter.revelation_place === "makkah" ? "مكية" : "مدنية"}</span>
+                    <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 border border-white/30">
+                      <Star className="text-blue-300" size={14} />
+                      <span className="font-medium text-sm">{chapter.revelation_place === "makkah" ? "مكية" : "مدنية"}</span>
                     </div>
                   </div>
 
@@ -229,30 +243,37 @@ const QuranSurahPage = () => {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 py-10">
-        {/* Modern Verses Card */}
-        <div className="relative group">
-          <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-3xl blur opacity-15 group-hover:opacity-25 transition duration-1000"></div>
-          <Card className="relative bg-white/95 backdrop-blur-xl border-0 shadow-2xl rounded-3xl overflow-hidden">
-            <CardContent className="p-8">
+      <div className="max-w-4xl mx-auto px-6 py-8">
+        {/* Authentic Mushaf Pages */}
+        <div className="relative">
+          <div className="absolute -inset-1 bg-gradient-to-r from-amber-300/20 to-yellow-300/20 rounded-3xl blur"></div>
+          <Card className="relative bg-gradient-to-br from-amber-50/90 to-yellow-50/90 backdrop-blur-sm border-2 border-amber-200/50 shadow-2xl rounded-3xl overflow-hidden">
+            {/* Decorative Header Border */}
+            <div className="h-3 bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600"></div>
+            
+            <CardContent className="p-6">
               {verses && verses.length > 0 && (
                 <>
-                  {/* Bismillah - Only show if chapter.bismillah_pre is true and not Al-Fatiha */}
+                  {/* Bismillah with Authentic Styling */}
                   {chapter.bismillah_pre && surahNumber !== 1 && (
-                    <div className="text-center mb-10">
-                      <div className="relative group">
-                        <div className="absolute -inset-2 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-2xl blur opacity-20"></div>
-                        <div className="relative bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-6 border border-emerald-200">
-                          <h2 className="text-3xl font-bold arabic-text text-emerald-800 leading-relaxed">
-                            بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
-                          </h2>
+                    <div className="text-center mb-8">
+                      <div className="relative">
+                        <div className="absolute -inset-3 bg-gradient-to-r from-amber-400/20 to-yellow-400/20 rounded-xl blur"></div>
+                        <div className="relative bg-gradient-to-r from-amber-100 to-yellow-100 rounded-xl p-4 border-2 border-amber-300/50 shadow-lg">
+                          <div className="text-center">
+                            <div className="w-full h-px bg-gradient-to-r from-transparent via-amber-600 to-transparent mb-3"></div>
+                            <h2 className="text-2xl font-bold arabic-text text-amber-800 leading-relaxed">
+                              بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+                            </h2>
+                            <div className="w-full h-px bg-gradient-to-r from-transparent via-amber-600 to-transparent mt-3"></div>
+                          </div>
                         </div>
                       </div>
                     </div>
                   )}
                   
-                  {/* Verses */}
-                  <div className="space-y-8">
+                  {/* Verses with Authentic Mushaf Design */}
+                  <div className="space-y-6">
                     {verses.map((verse, index) => {
                       const verseText = verse.text_uthmani;
                       const isHighlighted = highlightedVerse === verse.id;
@@ -261,40 +282,40 @@ const QuranSurahPage = () => {
                         <div 
                           key={verse.id} 
                           id={`verse-${verse.id}`}
-                          className={`group relative cursor-pointer transition-all duration-500 ${
-                            isHighlighted ? 'ring-4 ring-yellow-400 ring-opacity-50' : ''
-                          }`} 
-                          onClick={() => {}}
+                          className={`group relative transition-all duration-500 ${
+                            isHighlighted ? 'ring-2 ring-amber-400 ring-opacity-60' : ''
+                          }`}
                         >
-                          <div className={`absolute -inset-2 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500 ${
-                            isHighlighted ? 'opacity-100 from-yellow-400/30 to-orange-400/30' : ''
+                          <div className={`absolute -inset-2 bg-gradient-to-r from-amber-200/20 to-yellow-200/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-300 ${
+                            isHighlighted ? 'opacity-100 from-amber-300/30 to-yellow-300/30' : ''
                           }`}></div>
-                          <div className={`relative bg-gradient-to-r from-purple-50/50 to-pink-50/50 rounded-2xl p-6 border border-purple-100/50 group-hover:border-purple-200 transition-all duration-300 ${
-                            isHighlighted ? 'border-yellow-300 bg-gradient-to-r from-yellow-50/80 to-orange-50/80' : ''
+                          
+                          <div className={`relative bg-gradient-to-r from-white/60 to-amber-50/60 rounded-xl p-4 border border-amber-200/50 group-hover:border-amber-300/70 transition-all duration-300 ${
+                            isHighlighted ? 'border-amber-400/70 bg-gradient-to-r from-amber-50/80 to-yellow-50/80' : ''
                           }`}>
-                            <div className="flex items-start gap-4">
-                              {/* Verse Number */}
-                              <div className="relative">
-                                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300 ${
-                                  isHighlighted ? 'from-yellow-500 to-orange-500' : ''
+                            <div className="flex items-start gap-3">
+                              {/* Authentic Verse Number */}
+                              <div className="relative flex-shrink-0">
+                                <div className={`w-10 h-10 rounded-full bg-gradient-to-br from-amber-600 to-yellow-600 flex items-center justify-center shadow-lg group-hover:scale-105 transition-all duration-300 border-2 border-white/50 ${
+                                  isHighlighted ? 'from-amber-700 to-yellow-700 shadow-xl' : ''
                                 }`}>
-                                  <span className="text-white font-bold text-sm">{verse.id}</span>
+                                  <span className="text-white font-bold text-sm arabic-text">{verse.id}</span>
                                 </div>
-                                <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                                  <Sparkles size={8} className="text-white" />
-                                </div>
+                                
+                                {/* Decorative Corner */}
+                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
                               </div>
                               
-                              {/* Verse Text */}
+                              {/* Verse Text with Authentic Typography */}
                               <div className="flex-1 text-right">
-                                <p className={`arabic-text text-2xl leading-loose text-gray-800 group-hover:text-purple-800 transition-colors duration-300 ${
-                                  isHighlighted ? 'text-yellow-900 font-semibold' : ''
-                                }`}>
+                                <p className={`arabic-text text-xl leading-loose text-amber-900 group-hover:text-amber-800 transition-colors duration-300 font-medium ${
+                                  isHighlighted ? 'text-amber-800 font-semibold text-shadow' : ''
+                                }`} style={{ fontFamily: "'Amiri', 'Traditional Arabic', serif" }}>
                                   {verseText}
                                 </p>
                               </div>
                               
-                              {/* Action Icons */}
+                              {/* Action Icons with Authentic Design */}
                               <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
                                 <VerseAudioPlayer 
                                   surahNumber={surahNumber} 
@@ -302,16 +323,24 @@ const QuranSurahPage = () => {
                                   size="sm"
                                   selectedReciterId={selectedReciterId}
                                 />
-                                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-red-400 to-pink-400 flex items-center justify-center shadow-md hover:scale-110 transition-transform duration-200 cursor-pointer">
-                                  <Heart className="text-white" size={14} />
+                                <div className="w-7 h-7 rounded-full bg-gradient-to-r from-red-400 to-pink-400 flex items-center justify-center shadow-md hover:scale-110 transition-transform duration-200 cursor-pointer">
+                                  <Heart className="text-white" size={12} />
+                                </div>
+                                <div className="w-7 h-7 rounded-full bg-gradient-to-r from-blue-400 to-cyan-400 flex items-center justify-center shadow-md hover:scale-110 transition-transform duration-200 cursor-pointer">
+                                  <Bookmark className="text-white" size={12} />
                                 </div>
                               </div>
                             </div>
                           </div>
                           
+                          {/* Verse Separator with Islamic Design */}
                           {index < verses.length - 1 && (
-                            <div className="flex justify-center my-6">
-                              <div className="w-32 h-px bg-gradient-to-r from-transparent via-purple-300 to-transparent"></div>
+                            <div className="flex justify-center my-4">
+                              <div className="flex items-center gap-2">
+                                <div className="w-16 h-px bg-gradient-to-r from-transparent via-amber-400 to-transparent"></div>
+                                <div className="w-2 h-2 rounded-full bg-amber-400"></div>
+                                <div className="w-16 h-px bg-gradient-to-r from-transparent via-amber-400 to-transparent"></div>
+                              </div>
                             </div>
                           )}
                         </div>
@@ -321,6 +350,9 @@ const QuranSurahPage = () => {
                 </>
               )}
             </CardContent>
+            
+            {/* Decorative Footer Border */}
+            <div className="h-3 bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600"></div>
           </Card>
         </div>
       </div>

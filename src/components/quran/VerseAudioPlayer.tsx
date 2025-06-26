@@ -1,6 +1,8 @@
+
 import React, { useState, useRef } from "react";
 import { Volume2, Pause, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useReciters } from "@/services/api/reciterServices";
 
 interface VerseAudioPlayerProps {
   surahNumber: number;
@@ -13,41 +15,34 @@ const VerseAudioPlayer = ({
   surahNumber, 
   verseNumber, 
   size = "sm",
-  selectedReciterId = 1 // Default: عبد الباسط عبد الصمد
+  selectedReciterId = 1
 }: VerseAudioPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  
+  const { data: reciters } = useReciters({ language: "ar" });
 
   const getVerseAudioUrl = (reciterId: number, surahNum: number, verseNum: number) => {
+    const selectedReciter = reciters?.find(r => r.id === reciterId);
     const surahPadded = surahNum.toString().padStart(3, '0');
     const versePadded = verseNum.toString().padStart(3, '0');
     
-    // أشهر القراء مع مصادر صوتية موثوقة للآيات المفردة
-    switch (reciterId) {
-      case 1: // عبد الباسط عبد الصمد
-        return `https://everyayah.com/data/Abdul_Basit_Murattal_64kbps/${surahPadded}${versePadded}.mp3`;
-      case 2: // ماهر المعيقلي
-        return `https://everyayah.com/data/Maher_AlMuaiqly_64kbps/${surahPadded}${versePadded}.mp3`;
-      case 3: // مشاري العفاسي
-        return `https://everyayah.com/data/Alafasy_64kbps/${surahPadded}${versePadded}.mp3`;
-      case 4: // سعد الغامدي
-        return `https://everyayah.com/data/Saad_Al-Ghamdi_64kbps/${surahPadded}${versePadded}.mp3`;
-      case 5: // أحمد العجمي
-        return `https://everyayah.com/data/Ahmed_Al_Ajamy_64kbps/${surahPadded}${versePadded}.mp3`;
-      case 6: // محمد صديق المنشاوي
-        return `https://everyayah.com/data/Minshawy_Murattal_128kbps/${surahPadded}${versePadded}.mp3`;
-      case 7: // عبد الرحمن السديس
-        return `https://everyayah.com/data/AbdurRahman_As-Sudais_64kbps/${surahPadded}${versePadded}.mp3`;
-      case 8: // ياسر الدوسري
-        return `https://everyayah.com/data/Yasser_Ad-Dussary_128kbps/${surahPadded}${versePadded}.mp3`;
-      case 9: // ناصر القطامي
-        return `https://everyayah.com/data/Nasser_Alqatami_128kbps/${surahPadded}${versePadded}.mp3`;
-      case 10: // خالد الجليل
-        return `https://everyayah.com/data/Khalefa_Al-Tunaiji_64kbps/${surahPadded}${versePadded}.mp3`;
-      default:
-        return `https://everyayah.com/data/Abdul_Basit_Murattal_64kbps/${surahPadded}${versePadded}.mp3`;
+    if (selectedReciter && selectedReciter.moshaf && selectedReciter.moshaf.length > 0) {
+      // Try to find a moshaf that supports individual verses (usually has "ayah" in the name or type)
+      const verseMoshaf = selectedReciter.moshaf.find(m => 
+        m.moshaf_type && 
+        typeof m.moshaf_type === 'string' && 
+        (m.moshaf_type.includes('ayah') || m.moshaf_type.includes('verse'))
+      );
+      
+      if (verseMoshaf) {
+        return `${verseMoshaf.server}${surahPadded}${versePadded}.mp3`;
+      }
     }
+    
+    // Fallback to everyayah.com for individual verses
+    return `https://everyayah.com/data/Abdul_Basit_Murattal_64kbps/${surahPadded}${versePadded}.mp3`;
   };
 
   const handlePlayVerse = async () => {
@@ -93,7 +88,7 @@ const VerseAudioPlayer = ({
         setIsLoading(false);
         
         // Try alternative source for individual verse
-        const alternativeUrl = `https://cdn.islamic.network/quran/audio/64/ar.abdulbasitmurattal/${surahNumber}/${verseNumber}.mp3`;
+        const alternativeUrl = `https://everyayah.com/data/Abdul_Basit_Murattal_64kbps/${surahNumber.toString().padStart(3, '0')}${verseNumber.toString().padStart(3, '0')}.mp3`;
         console.log(`Trying alternative verse audio source: ${alternativeUrl}`);
         
         const alternativeAudio = new Audio(alternativeUrl);
