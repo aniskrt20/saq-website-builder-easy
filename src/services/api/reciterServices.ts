@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { fetchApi } from "./baseApi";
 import { Reciter, ReciterParams, Riwayah } from "./types";
@@ -21,7 +20,14 @@ export const fetchReciters = async (params?: ReciterParams): Promise<Reciter[]> 
   if (params?.surah) queryParams.surah = params.surah.toString();
   
   const data = await fetchApi<RecitersResponse>("reciters", queryParams);
-  return data.reciters;
+  
+  // Filter out the specific reciter "مالك شيبة الحمد"
+  const filteredReciters = data.reciters.filter(reciter => 
+    reciter.name !== "مالك شيبة الحمد" && 
+    reciter.name !== "Malik Shaiba Al-Hamad"
+  );
+  
+  return filteredReciters;
 };
 
 export const fetchRiwayat = async (): Promise<Riwayah[]> => {
