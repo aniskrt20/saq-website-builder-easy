@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useGeoLocation } from "@/hooks/use-location";
 import { getHijriDate } from "@/data/prayers";
@@ -82,7 +83,6 @@ const Header: React.FC<HeaderProps> = ({ title = "صدقة جارية" }) => {
         </div>
         
         <div className="text-center">
-          <h2 className="arabic-text text-lg sm:text-xl mt-2 sm:mt-3">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيمِ</h2>
           <p className="text-xs sm:text-sm mt-2 arabic-text flex items-center justify-center">
             <Moon size={12} className="mx-1 text-islamic-secondary" />
             {isLoadingDate ? (
