@@ -7,7 +7,7 @@ import DailyQuote from "@/components/DailyQuote";
 import BottomNavigation from "@/components/BottomNavigation";
 import ThreeDBackground from "@/components/ThreeDBackground";
 import { Button } from "@/components/ui/button";
-import { Volume2 } from "lucide-react";
+import { Volume2, Palette } from "lucide-react";
 import { useTestAdhan } from "@/hooks/use-test-adhan";
 import { toast } from "sonner";
 
@@ -107,6 +107,38 @@ const Index = () => {
                     <DailyQuote />
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Artistic Signature/Watermark */}
+        <div className="relative z-10 pb-24">
+          <div className="flex justify-center items-center">
+            <div className="group cursor-default">
+              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 dark:from-emerald-400/20 dark:via-teal-400/20 dark:to-cyan-400/20 backdrop-blur-sm border border-emerald-200/30 dark:border-emerald-700/30 px-6 py-3 shadow-lg hover:shadow-xl transition-all duration-500 transform hover:scale-105">
+                {/* Decorative Elements */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                
+                <div className="relative flex items-center space-x-3 rtl:space-x-reverse">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-md">
+                    <Palette className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 arabic-text">
+                      صُنع بحب من
+                    </p>
+                    <p className="text-lg font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 dark:from-emerald-400 dark:via-teal-400 dark:to-cyan-400 bg-clip-text text-transparent arabic-text">
+                      كرطوش محمد أنيس
+                    </p>
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center shadow-md transform rotate-12">
+                    <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                  </div>
+                </div>
+                
+                {/* Bottom decorative line */}
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-16 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent group-hover:w-full transition-all duration-500"></div>
               </div>
             </div>
           </div>
