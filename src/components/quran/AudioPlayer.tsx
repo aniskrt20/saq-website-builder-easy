@@ -7,8 +7,6 @@ import { Badge } from '@/components/ui/badge';
 import { 
   Play, 
   Pause, 
-  SkipBack, 
-  SkipForward, 
   Volume2, 
   VolumeX,
   Repeat
@@ -61,16 +59,31 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
       
       audioRef.current.src = audioUrl;
       
-      audioRef.current.onloadeddata = () => {
-        setIsLoading(false);
+      // إعداد مستمعي الأحداث
+      audioRef.current.onloadedmetadata = () => {
+        console.log('Audio metadata loaded');
         setDuration(audioRef.current?.duration || 0);
-        console.log('Audio loaded successfully');
+        setIsLoading(false);
+      };
+
+      audioRef.current.oncanplaythrough = () => {
+        console.log('Audio can play through');
+        setIsLoading(false);
       };
 
       audioRef.current.onerror = (e) => {
-        setIsLoading(false);
         console.error('Audio loading error:', e);
-        toast.error('فشل في تحميل الصوت');
+        setIsLoading(false);
+        toast.error('فشل في تحميل الصوت. جاري المحاولة مع مصدر آخر...');
+        
+        // محاولة مع رابط بديل
+        setTimeout(() => {
+          if (audioRef.current) {
+            const backupUrl = `https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${surah.toString().padStart(3, '0')}.mp3`;
+            audioRef.current.src = backupUrl;
+            audioRef.current.load();
+          }
+        }, 1000);
       };
 
       audioRef.current.ontimeupdate = () => {
@@ -82,8 +95,6 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
         if (isRepeat) {
           audioRef.current?.play();
           setIsPlaying(true);
-        } else {
-          handleNext();
         }
       };
 
@@ -103,27 +114,27 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
         audioRef.current.pause();
         setIsPlaying(false);
       } else {
+        // التأكد من تحميل الصوت قبل التشغيل
+        if (audioRef.current.readyState === 0) {
+          setIsLoading(true);
+          await new Promise((resolve) => {
+            audioRef.current!.oncanplay = resolve;
+          });
+          setIsLoading(false);
+        }
+        
         await audioRef.current.play();
         setIsPlaying(true);
       }
     } catch (error) {
       console.error('Play/pause error:', error);
+      setIsLoading(false);
       toast.error('خطأ في تشغيل الصوت');
     }
   };
 
-  const handleNext = () => {
-    const nextSurah = surah < 114 ? surah + 1 : 1;
-    onSurahChange(nextSurah);
-  };
-
-  const handlePrevious = () => {
-    const prevSurah = surah > 1 ? surah - 1 : 114;
-    onSurahChange(prevSurah);
-  };
-
   const handleSeek = (value: number[]) => {
-    if (!audioRef.current) return;
+    if (!audioRef.current || duration === 0) return;
     const newTime = (value[0] / 100) * duration;
     audioRef.current.currentTime = newTime;
     setCurrentTime(newTime);
@@ -177,17 +188,8 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
           </div>
         </div>
 
-        {/* أزرار التحكم الرئيسية */}
+        {/* أزرار التحكم */}
         <div className="flex items-center justify-center gap-4">
-          <Button
-            onClick={handlePrevious}
-            variant="ghost"
-            size="sm"
-            className="rounded-full w-10 h-10 p-0"
-          >
-            <SkipBack className="w-4 h-4" />
-          </Button>
-
           <Button
             onClick={togglePlayPause}
             disabled={isLoading}
@@ -201,20 +203,10 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
               <Play className="w-5 h-5" />
             )}
           </Button>
-
-          <Button
-            onClick={handleNext}
-            variant="ghost"
-            size="sm"
-            className="rounded-full w-10 h-10 p-0"
-          >
-            <SkipForward className="w-4 h-4" />
-          </Button>
         </div>
 
         {/* أزرار التحكم الإضافية */}
         <div className="flex items-center justify-between">
-          {/* التكرار */}
           <Button
             onClick={toggleRepeat}
             variant="ghost"
@@ -224,7 +216,6 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
             <Repeat className="w-3 h-3" />
           </Button>
 
-          {/* التحكم في الصوت */}
           <div className="flex items-center gap-2">
             <Button
               onClick={toggleMute}
@@ -244,8 +235,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
           </div>
         </div>
 
-        {/* العنصر الصوتي المخفي */}
-        <audio ref={audioRef} preload="metadata" />
+        <audio ref={audioRef} preload="metadata" crossOrigin="anonymous" />
       </CardContent>
     </Card>
   );

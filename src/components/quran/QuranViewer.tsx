@@ -44,7 +44,6 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
     
     try {
       if (playingAyah === ayahNumber) {
-        // إيقاف التشغيل
         if (audioRef.current) {
           audioRef.current.pause();
           setPlayingAyah(null);
@@ -59,14 +58,13 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
       if (audioRef.current) {
         audioRef.current.src = audioUrl;
         
-        // معالجة أحداث الصوت
-        audioRef.current.onloadstart = () => {
-          console.log('Audio loading started');
+        audioRef.current.onloadedmetadata = () => {
+          console.log('Ayah audio metadata loaded');
+          setAudioLoading(false);
         };
         
-        audioRef.current.oncanplay = async () => {
-          console.log('Audio can play');
-          setAudioLoading(false);
+        audioRef.current.oncanplaythrough = async () => {
+          console.log('Ayah audio can play through');
           try {
             await audioRef.current?.play();
             setPlayingAyah(ayahNumber);
@@ -78,18 +76,25 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
         };
         
         audioRef.current.onended = () => {
-          console.log('Audio ended');
+          console.log('Ayah audio ended');
           setPlayingAyah(null);
         };
         
         audioRef.current.onerror = (e) => {
-          console.error('Audio error:', e);
+          console.error('Ayah audio error:', e);
           setAudioLoading(false);
           setPlayingAyah(null);
-          toast.error('فشل في تحميل الصوت');
+          
+          // محاولة مع رابط بديل
+          const backupUrl = `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${ayahNumber.toString().padStart(6, '0')}.mp3`;
+          console.log('Trying backup URL:', backupUrl);
+          
+          if (audioRef.current) {
+            audioRef.current.src = backupUrl;
+            audioRef.current.load();
+          }
         };
         
-        // بدء التحميل
         audioRef.current.load();
       }
     } catch (error) {
@@ -125,7 +130,6 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
 
   return (
     <div className="relative">
-      {/* الصفحة */}
       <Card className="mushaf-page">
         <div className="p-8">
           
@@ -160,18 +164,15 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
               <div key={ayah.number} className="mushaf-verse group">
                 <div className="flex items-start gap-4">
                   
-                  {/* رقم الآية */}
                   <div className="verse-number flex-shrink-0">
                     {ayah.numberInSurah}
                   </div>
                   
-                  {/* نص الآية */}
                   <div className="flex-1">
                     <p className="text-xl arabic-text leading-relaxed text-gray-800 text-shadow mb-3">
                       {ayah.text}
                     </p>
                     
-                    {/* أزرار التحكم */}
                     {showAudio && (
                       <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                         <Button
@@ -207,8 +208,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
         </div>
       </Card>
 
-      {/* مشغل الصوت المخفي */}
-      <audio ref={audioRef} preload="none" />
+      <audio ref={audioRef} preload="none" crossOrigin="anonymous" />
     </div>
   );
 };
