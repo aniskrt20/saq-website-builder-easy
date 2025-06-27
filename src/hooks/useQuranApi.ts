@@ -41,32 +41,39 @@ const SURAH_NAMES = [
   'الفلق', 'الناس'
 ];
 
-// تحويل رموز القراء إلى الأسماء الصحيحة
-const RECITER_MAPPING: Record<string, string> = {
-  'ar.alafasy': 'alafasy',
-  'ar.abdulbasitmurattal': 'abdulbasitmurattal',
-  'ar.minshawi': 'minshawi',
-  'ar.muhammadayyoub': 'muhammadayyoub',
-  'ar.saoodshuraym': 'saoodshuraym',
-  'ar.ahmedajamy': 'ahmedajamy',
-  'ar.husary': 'husary',
-  'ar.sudais': 'sudais',
-  'ar.shaatri': 'shaatri',
-  'ar.hani': 'hani'
-};
-
-const RECITER_NAMES: Record<string, string> = {
-  'ar.alafasy': 'ماهر المعيقلي',
-  'ar.abdulbasitmurattal': 'عبد الباسط عبد الصمد',
-  'ar.minshawi': 'محمد صديق المنشاوي',
-  'ar.muhammadayyoub': 'محمد أيوب',
-  'ar.saoodshuraym': 'سعود الشريم',
-  'ar.ahmedajamy': 'أحمد بن علي العجمي',
-  'ar.husary': 'خليل الحصري',
-  'ar.sudais': 'عبد الرحمن السديس',
-  'ar.shaatri': 'أبو بكر الشاطري',
-  'ar.hani': 'هاني الرفاعي'
-};
+// القراء حسب everyayah.com API
+const RECITERS = [
+  { folder: 'Alafasy_128kbps', name: 'ماهر المعيقلي' },
+  { folder: 'Abdul_Basit_Murattal_192kbps', name: 'عبد الباسط عبد الصمد (مرتل)' },
+  { folder: 'Minshawi_Murattal_128kbps', name: 'محمد صديق المنشاوي (مرتل)' },
+  { folder: 'Hudhaify_128kbps', name: 'علي الحذيفي' },
+  { folder: 'Shatri_128kbps', name: 'أبو بكر الشاطري' },
+  { folder: 'Saood_ash-Shuraym_128kbps', name: 'سعود الشريم' },
+  { folder: 'AbdurRahman_As-Sudais_192kbps', name: 'عبد الرحمن السديس' },
+  { folder: 'Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net', name: 'أحمد بن علي العجمي' },
+  { folder: 'Husary_128kbps', name: 'خليل الحصري' },
+  { folder: 'Muhammadayyoub_128kbps', name: 'محمد أيوب' },
+  { folder: 'Ghamadi_40kbps', name: 'سعد الغامدي' },
+  { folder: 'Salah_Al_Budair_128kbps', name: 'صلاح البدير' },
+  { folder: 'Abdullah_Basfar_192kbps', name: 'عبد الله بصفر' },
+  { folder: 'Abdullah_Awad_Al-Juhani_128kbps', name: 'عبد الله الجهني' },
+  { folder: 'Fares_Abbad_64kbps', name: 'فارس عباد' },
+  { folder: 'Yasser_Ad-Dussary_128kbps', name: 'ياسر الدوسري' },
+  { folder: 'Wadee_Hammadi_al-Yamani_128kbps', name: 'وديع اليمني' },
+  { folder: 'Abdullah_Al-Matrood_128kbps', name: 'عبد الله المطرود' },
+  { folder: 'bandar_balilah_64kbps', name: 'بندر بليلة' },
+  { folder: 'Khalil_al_Husary_64kbps', name: 'خليل الحصري (مجود)' },
+  { folder: 'AbdulBaset_AbdulSamad_Mujawwad_128kbps', name: 'عبد الباسط عبد الصمد (مجود)' },
+  { folder: 'Minshawi_Mujawwad_192kbps', name: 'محمد صديق المنشاوي (مجود)' },
+  { folder: 'Muhammad_Jibreel_128kbps', name: 'محمد جبريل' },
+  { folder: 'nasser_bin_ali_alqatami_128kbps', name: 'ناصر القطامي' },
+  { folder: 'AbdulSamad_64kbps_QuranCentral.com', name: 'عبد الصمد' },
+  { folder: 'Ayyub_128kbps', name: 'محمد أيوب (جودة عالية)' },
+  { folder: 'Ibrahim_Walk_192kbps', name: 'إبراهيم الأخضر' },
+  { folder: 'Hani_ar-Rifai_192kbps', name: 'هاني الرفاعي' },
+  { folder: 'Abdurrahmaan_As-Sudais_64kbps', name: 'عبد الرحمن السديس (64k)' },
+  { folder: 'Minshawy_Teacher_128kbps', name: 'المنشاوي (تعليمي)' }
+];
 
 export const useQuranApi = () => {
   const [surahData, setSurahData] = useState<Surah | null>(null);
@@ -104,34 +111,22 @@ export const useQuranApi = () => {
     }
   }, []);
 
-  // تحسين روابط الصوت للسور
-  const getSurahAudioUrl = useCallback((reciter: string, surahNumber: number) => {
-    const mappedReciter = RECITER_MAPPING[reciter] || reciter.replace('ar.', '');
+  // تحسين روابط الصوت للسور باستخدام everyayah.com
+  const getSurahAudioUrl = useCallback((reciterFolder: string, surahNumber: number) => {
     const paddedSurahNumber = surahNumber.toString().padStart(3, '0');
+    const audioUrl = `https://everyayah.com/data/${reciterFolder}/${paddedSurahNumber}.mp3`;
     
-    // استخدام مصادر متعددة للصوت
-    const audioSources = [
-      `https://server8.mp3quran.net/${mappedReciter}/${paddedSurahNumber}.mp3`,
-      `https://everyayah.com/data/${mappedReciter}/${paddedSurahNumber}.mp3`,
-      `https://cdn.islamic.network/quran/audio-surah/128/${reciter}/${surahNumber}.mp3`
-    ];
-    
-    console.log('Surah audio URL:', audioSources[0]);
-    return audioSources[0];
+    console.log('Surah audio URL:', audioUrl);
+    return audioUrl;
   }, []);
 
-  // تحسين روابط الصوت للآيات
-  const getAyahAudioUrl = useCallback((reciter: string, ayahNumber: number) => {
-    const mappedReciter = RECITER_MAPPING[reciter] || reciter.replace('ar.', '');
+  // تحسين روابط الصوت للآيات باستخدام everyayah.com
+  const getAyahAudioUrl = useCallback((reciterFolder: string, ayahNumber: number) => {
     const paddedAyahNumber = ayahNumber.toString().padStart(6, '0');
+    const audioUrl = `https://everyayah.com/data/${reciterFolder}/${paddedAyahNumber}.mp3`;
     
-    const audioSources = [
-      `https://everyayah.com/data/${mappedReciter}/${paddedAyahNumber}.mp3`,
-      `https://cdn.islamic.network/quran/audio/128/${reciter}/${ayahNumber}.mp3`
-    ];
-    
-    console.log('Ayah audio URL:', audioSources[0]);
-    return audioSources[0];
+    console.log('Ayah audio URL:', audioUrl);
+    return audioUrl;
   }, []);
 
   const getSurahName = useCallback((surahNumber: number) => {
@@ -139,8 +134,13 @@ export const useQuranApi = () => {
     return SURAH_NAMES[surahNumber - 1];
   }, []);
 
-  const getReciterName = useCallback((reciterCode: string) => {
-    return RECITER_NAMES[reciterCode] || 'قارئ غير محدد';
+  const getReciters = useCallback(() => {
+    return RECITERS;
+  }, []);
+
+  const getReciterName = useCallback((reciterFolder: string) => {
+    const reciter = RECITERS.find(r => r.folder === reciterFolder);
+    return reciter ? reciter.name : 'قارئ غير محدد';
   }, []);
 
   return {
@@ -151,6 +151,7 @@ export const useQuranApi = () => {
     getSurahAudioUrl,
     getAyahAudioUrl,
     getSurahName,
+    getReciters,
     getReciterName
   };
 };

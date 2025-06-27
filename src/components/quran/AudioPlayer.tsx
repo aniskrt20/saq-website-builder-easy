@@ -2,7 +2,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -12,11 +11,11 @@ import {
   SkipForward, 
   Volume2, 
   VolumeX,
-  Repeat,
-  Shuffle
+  Repeat
 } from 'lucide-react';
 import { useQuranApi } from '@/hooks/useQuranApi';
 import { formatTime } from '@/utils/audioUtils';
+import { toast } from 'sonner';
 
 interface AudioPlayerProps {
   reciter: string;
@@ -54,18 +53,24 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
     if (!audioRef.current) return;
 
     setIsLoading(true);
+    setIsPlaying(false);
+    
     try {
       const audioUrl = getSurahAudioUrl(reciter, surah);
+      console.log('Loading audio URL:', audioUrl);
+      
       audioRef.current.src = audioUrl;
       
       audioRef.current.onloadeddata = () => {
         setIsLoading(false);
         setDuration(audioRef.current?.duration || 0);
+        console.log('Audio loaded successfully');
       };
 
-      audioRef.current.onerror = () => {
+      audioRef.current.onerror = (e) => {
         setIsLoading(false);
-        console.error('Failed to load audio');
+        console.error('Audio loading error:', e);
+        toast.error('فشل في تحميل الصوت');
       };
 
       audioRef.current.ontimeupdate = () => {
@@ -73,40 +78,48 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
       };
 
       audioRef.current.onended = () => {
+        setIsPlaying(false);
         if (isRepeat) {
           audioRef.current?.play();
+          setIsPlaying(true);
         } else {
           handleNext();
         }
       };
 
+      audioRef.current.load();
     } catch (error) {
       setIsLoading(false);
       console.error('Error loading surah audio:', error);
+      toast.error('حدث خطأ في تحميل الصوت');
     }
   };
 
-  const togglePlayPause = () => {
+  const togglePlayPause = async () => {
     if (!audioRef.current) return;
 
-    if (isPlaying) {
-      audioRef.current.pause();
-    } else {
-      audioRef.current.play();
+    try {
+      if (isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        await audioRef.current.play();
+        setIsPlaying(true);
+      }
+    } catch (error) {
+      console.error('Play/pause error:', error);
+      toast.error('خطأ في تشغيل الصوت');
     }
-    setIsPlaying(!isPlaying);
   };
 
   const handleNext = () => {
     const nextSurah = surah < 114 ? surah + 1 : 1;
     onSurahChange(nextSurah);
-    setIsPlaying(false);
   };
 
   const handlePrevious = () => {
     const prevSurah = surah > 1 ? surah - 1 : 114;
     onSurahChange(prevSurah);
-    setIsPlaying(false);
   };
 
   const handleSeek = (value: number[]) => {
@@ -232,7 +245,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
         </div>
 
         {/* العنصر الصوتي المخفي */}
-        <audio ref={audioRef} />
+        <audio ref={audioRef} preload="metadata" />
       </CardContent>
     </Card>
   );

@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
-import { ChevronLeft, ChevronRight, BookOpen, Navigation } from 'lucide-react';
+import { Navigation } from 'lucide-react';
 
 interface NavigationControlsProps {
   currentSurah: number;
@@ -12,8 +12,6 @@ interface NavigationControlsProps {
   totalPages: number;
   onSurahChange: (surah: number) => void;
   onPageChange: (page: number) => void;
-  onNext: () => void;
-  onPrevious: () => void;
 }
 
 const SURAH_NAMES = [
@@ -39,9 +37,7 @@ export const NavigationControls: React.FC<NavigationControlsProps> = ({
   currentPage,
   totalPages,
   onSurahChange,
-  onPageChange,
-  onNext,
-  onPrevious
+  onPageChange
 }) => {
   const progress = totalPages > 0 ? (currentPage / totalPages) * 100 : 0;
 
@@ -96,31 +92,6 @@ export const NavigationControls: React.FC<NavigationControlsProps> = ({
           <div className="text-xs text-gray-500 text-center">
             صفحة {currentPage} من {totalPages}
           </div>
-        </div>
-
-        {/* أزرار التنقل السريع */}
-        <div className="grid grid-cols-2 gap-2">
-          <Button
-            onClick={onPrevious}
-            disabled={currentPage <= 1}
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-2 border-amber-200 hover:bg-amber-50"
-          >
-            <ChevronRight className="w-4 h-4" />
-            السابق
-          </Button>
-          
-          <Button
-            onClick={onNext}
-            disabled={currentPage >= totalPages}
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-2 border-amber-200 hover:bg-amber-50"
-          >
-            التالي
-            <ChevronLeft className="w-4 h-4" />
-          </Button>
         </div>
 
         {/* الانتقال المباشر للصفحة */}

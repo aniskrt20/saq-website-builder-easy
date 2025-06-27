@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { QuranViewer } from '@/components/quran/QuranViewer';
 import { AudioPlayer } from '@/components/quran/AudioPlayer';
 import { ReciterSelector } from '@/components/quran/ReciterSelector';
@@ -13,7 +12,7 @@ import { useReadingProgress } from '@/hooks/useReadingProgress';
 import { BookOpen, Headphones, Settings } from 'lucide-react';
 
 const FullQuranPage = () => {
-  const [selectedReciter, setSelectedReciter] = useState('ar.alafasy');
+  const [selectedReciter, setSelectedReciter] = useState('Alafasy_128kbps');
   const [isAudioMode, setIsAudioMode] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   
@@ -22,9 +21,7 @@ const FullQuranPage = () => {
     currentPage,
     totalPages,
     goToSurah,
-    goToPage,
-    nextPage,
-    previousPage
+    goToPage
   } = useQuranNavigation();
   
   const {
@@ -137,8 +134,6 @@ const FullQuranPage = () => {
                 totalPages={totalPages}
                 onSurahChange={goToSurah}
                 onPageChange={handlePageChange}
-                onNext={nextPage}
-                onPrevious={previousPage}
               />
               
             </div>

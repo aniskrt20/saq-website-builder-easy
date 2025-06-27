@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, ChevronRight, Play, Pause, Volume2 } from 'lucide-react';
+import { Play, Pause } from 'lucide-react';
 import { useQuranApi } from '@/hooks/useQuranApi';
 import { toast } from 'sonner';
 
@@ -22,7 +22,6 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
   showAudio,
   onPageChange
 }) => {
-  const [isFlipping, setIsFlipping] = useState(false);
   const [playingAyah, setPlayingAyah] = useState<number | null>(null);
   const [audioLoading, setAudioLoading] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -39,20 +38,6 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
     console.log('Loading surah:', surah);
     getSurahByNumber(surah);
   }, [surah, getSurahByNumber]);
-
-  const handlePageFlip = (direction: 'next' | 'prev') => {
-    console.log('Page flip:', direction, 'current page:', page);
-    setIsFlipping(true);
-    
-    setTimeout(() => {
-      if (direction === 'next') {
-        onPageChange(page + 1);
-      } else {
-        onPageChange(Math.max(1, page - 1));
-      }
-      setIsFlipping(false);
-    }, 300);
-  };
 
   const playAyah = async (ayahNumber: number) => {
     console.log('Playing ayah:', ayahNumber, 'with reciter:', reciter);
@@ -79,11 +64,17 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
           console.log('Audio loading started');
         };
         
-        audioRef.current.oncanplay = () => {
+        audioRef.current.oncanplay = async () => {
           console.log('Audio can play');
           setAudioLoading(false);
-          audioRef.current?.play();
-          setPlayingAyah(ayahNumber);
+          try {
+            await audioRef.current?.play();
+            setPlayingAyah(ayahNumber);
+          } catch (playError) {
+            console.error('Play error:', playError);
+            setPlayingAyah(null);
+            toast.error('فشل في تشغيل الآية');
+          }
         };
         
         audioRef.current.onended = () => {
@@ -95,16 +86,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
           console.error('Audio error:', e);
           setAudioLoading(false);
           setPlayingAyah(null);
-          toast.error('فشل في تحميل الصوت، جاري المحاولة بمصدر آخر...');
-          
-          // محاولة مصدر صوتي آخر
-          setTimeout(() => {
-            if (audioRef.current) {
-              const fallbackUrl = `https://everyayah.com/data/Alafasy_128kbps/${ayahNumber.toString().padStart(6, '0')}.mp3`;
-              console.log('Trying fallback URL:', fallbackUrl);
-              audioRef.current.src = fallbackUrl;
-            }
-          }, 1000);
+          toast.error('فشل في تحميل الصوت');
         };
         
         // بدء التحميل
@@ -144,7 +126,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
   return (
     <div className="relative">
       {/* الصفحة */}
-      <Card className={`mushaf-page transition-all duration-300 ${isFlipping ? 'scale-95 opacity-50' : 'scale-100 opacity-100'}`}>
+      <Card className="mushaf-page">
         <div className="p-8">
           
           {/* رأس السورة */}
@@ -197,7 +179,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
                           variant="ghost"
                           onClick={() => playAyah(ayah.number)}
                           className="h-8 px-2 text-amber-600 hover:text-amber-700 hover:bg-amber-50"
-                          disabled={audioLoading}
+                          disabled={audioLoading && playingAyah === ayah.number}
                         >
                           {audioLoading && playingAyah === ayah.number ? (
                             <div className="animate-spin w-3 h-3 border-2 border-amber-600 border-t-transparent rounded-full"></div>
@@ -224,31 +206,6 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
           
         </div>
       </Card>
-
-      {/* أزرار التنقل */}
-      <div className="flex justify-between mt-6">
-        <Button
-          onClick={() => handlePageFlip('prev')}
-          disabled={page <= 1 || isFlipping}
-          className="flex items-center gap-2 bg-white/80 backdrop-blur-sm hover:bg-white"
-        >
-          <ChevronRight className="w-4 h-4" />
-          الصفحة السابقة
-        </Button>
-        
-        <div className="flex items-center gap-2 text-sm text-gray-600">
-          <span>صفحة {page}</span>
-        </div>
-        
-        <Button
-          onClick={() => handlePageFlip('next')}
-          disabled={isFlipping}
-          className="flex items-center gap-2 bg-white/80 backdrop-blur-sm hover:bg-white"
-        >
-          الصفحة التالية
-          <ChevronLeft className="w-4 h-4" />
-        </Button>
-      </div>
 
       {/* مشغل الصوت المخفي */}
       <audio ref={audioRef} preload="none" />
