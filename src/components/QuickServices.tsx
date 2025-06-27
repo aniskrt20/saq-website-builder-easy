@@ -1,146 +1,120 @@
 
 import React from "react";
-import { Card } from "@/components/ui/card";
-import { BookOpen, Gift, Heart, Radio, Scroll, Video, Info, Shield, Copyright } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-
-interface ServiceItem {
-  id: string;
-  name: string;
-  nameAr: string;
-  icon: React.ReactNode;
-  color: string;
-  bgColor: string;
-  path: string;
-}
-
-const services: ServiceItem[] = [
-  {
-    id: "adhkar",
-    name: "Adhkar",
-    nameAr: "الأذكار",
-    icon: <Scroll size={20} />,
-    color: "#059669",
-    bgColor: "from-emerald-500 to-teal-600",
-    path: "/adhkar"
-  },
-  {
-    id: "radio",
-    name: "Radio", 
-    nameAr: "الإذاعات",
-    icon: <Radio size={20} />,
-    color: "#0891b2",
-    bgColor: "from-cyan-500 to-blue-600",
-    path: "/radio"
-  },
-  {
-    id: "videos",
-    name: "Videos",
-    nameAr: "قناة القرآن",
-    icon: <Video size={20} />,
-    color: "#7c3aed",
-    bgColor: "from-violet-500 to-purple-600",
-    path: "/videos"
-  },
-  {
-    id: "hadith",
-    name: "Hadith",
-    nameAr: "الحديث",
-    icon: <BookOpen size={20} />,
-    color: "#dc2626",
-    bgColor: "from-red-500 to-rose-600",
-    path: "/hadith"
-  },
-  {
-    id: "tasbih",
-    name: "Tasbih",
-    nameAr: "التسبيح",
-    icon: <Gift size={20} />,
-    color: "#ea580c",
-    bgColor: "from-orange-500 to-amber-600",
-    path: "/tasbih"
-  },
-  {
-    id: "about",
-    name: "About",
-    nameAr: "من نحن",
-    icon: <Info size={20} />,
-    color: "#0369a1",
-    bgColor: "from-blue-500 to-indigo-600",
-    path: "/about"
-  },
-  {
-    id: "privacy",
-    name: "Privacy",
-    nameAr: "سياسة الخصوصية",
-    icon: <Shield size={20} />,
-    color: "#15803d",
-    bgColor: "from-green-500 to-emerald-600",
-    path: "/privacy"
-  },
-  {
-    id: "copyright",
-    name: "Copyright",
-    nameAr: "حقوق النشر",
-    icon: <Copyright size={20} />,
-    color: "#be185d",
-    bgColor: "from-pink-500 to-rose-600",
-    path: "/copyright"
-  }
-];
+import { 
+  Headphones, 
+  Video, 
+  Settings, 
+  Info, 
+  PlayCircle,
+  Sparkles,
+  BookOpen,
+  Compass
+} from "lucide-react";
 
 const QuickServices = () => {
+  const services = [
+    {
+      title: "التسبيح الرقمي",
+      description: "عداد تسبيح إلكتروني",
+      icon: <Sparkles className="w-6 h-6" />,
+      link: "/tasbih",
+      color: "from-green-500 to-emerald-500"
+    },
+    {
+      title: "الأذكار",
+      description: "أذكار الصباح والمساء",
+      icon: <BookOpen className="w-6 h-6" />,
+      link: "/adhkar",
+      color: "from-blue-500 to-cyan-500"
+    },
+    {
+      title: "الأدعية",
+      description: "مجموعة من الأدعية المختارة",
+      icon: <Compass className="w-6 h-6" />,
+      link: "/duas",
+      color: "from-purple-500 to-pink-500"
+    },
+    {
+      title: "الإذاعات الإسلامية",
+      description: "إذاعات قرآنية مباشرة",
+      icon: <Headphones className="w-6 h-6" />,
+      link: "/radio",
+      color: "from-orange-500 to-red-500"
+    },
+    {
+      title: "الفيديوهات الإسلامية",
+      description: "محتوى مرئي إسلامي",
+      icon: <Video className="w-6 h-6" />,
+      link: "/videos",
+      color: "from-teal-500 to-blue-500"
+    },
+    {
+      title: "الأحاديث النبوية",
+      description: "أحاديث صحيحة مع البحث",
+      icon: <PlayCircle className="w-6 h-6" />,
+      link: "/hadith",
+      color: "from-indigo-500 to-purple-500"
+    }
+  ];
+
   return (
-    <div className="w-full">
-      {/* Enhanced Header */}
-      <div className="mb-6">
-        <div className="flex items-center justify-center mb-6">
-          <div className="flex items-center space-x-4">
-            <div className="h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent flex-1 w-16"></div>
-            <div className="relative">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white arabic-text px-4">الخدمات السريعة</h2>
-              <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
-            </div>
-            <div className="h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent flex-1 w-16"></div>
-          </div>
-        </div>
+    <div className="py-8">
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold text-gray-800 mb-2 arabic-text">الخدمات السريعة</h2>
+        <p className="text-gray-600">اختر الخدمة التي تحتاجها</p>
       </div>
       
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {services.map((service, index) => (
-          <Link to={service.path} key={service.id}>
-            <div 
-              className="group relative overflow-hidden rounded-2xl bg-white dark:bg-gray-800 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105 hover:-translate-y-2"
-              style={{
-                animationDelay: `${index * 100}ms`
-              }}
-            >
-              {/* Gradient Background Overlay */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${service.bgColor} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}></div>
-              
-              {/* Content */}
-              <div className="relative p-4 sm:p-6 flex flex-col items-center justify-center text-center min-h-[100px] sm:min-h-[120px]">
-                {/* Icon Container */}
-                <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br ${service.bgColor} flex items-center justify-center mb-3 sm:mb-4 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110`}>
+          <Link key={index} to={service.link}>
+            <Card className="group cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+              <CardContent className="p-4 text-center">
+                <div className={`w-12 h-12 mx-auto mb-3 rounded-full bg-gradient-to-r ${service.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
                   <div className="text-white">
                     {service.icon}
                   </div>
                 </div>
-                
-                {/* Service Name */}
-                <p className="text-sm sm:text-lg font-semibold arabic-text text-gray-800 dark:text-white group-hover:text-gray-900 dark:group-hover:text-white transition-colors duration-300">
-                  {service.nameAr}
+                <h3 className="font-semibold text-gray-800 text-sm mb-1 arabic-text group-hover:text-purple-700 transition-colors duration-300">
+                  {service.title}
+                </h3>
+                <p className="text-xs text-gray-600 group-hover:text-gray-700 transition-colors duration-300">
+                  {service.description}
                 </p>
-                
-                {/* Hover Effect Border */}
-                <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${service.bgColor} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left`}></div>
-              </div>
-              
-              {/* Shine Effect */}
-              <div className="absolute inset-0 -top-1 -left-1 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-            </div>
+              </CardContent>
+            </Card>
           </Link>
         ))}
+      </div>
+      
+      {/* Settings and About */}
+      <div className="flex gap-4 mt-6">
+        <Link to="/settings" className="flex-1">
+          <Card className="group cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+            <CardContent className="p-4 text-center">
+              <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-gradient-to-r from-gray-500 to-gray-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                <Settings className="w-5 h-5 text-white" />
+              </div>
+              <h3 className="font-semibold text-gray-800 text-sm arabic-text group-hover:text-purple-700 transition-colors duration-300">
+                الإعدادات
+              </h3>
+            </CardContent>
+          </Card>
+        </Link>
+        
+        <Link to="/about" className="flex-1">
+          <Card className="group cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+            <CardContent className="p-4 text-center">
+              <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                <Info className="w-5 h-5 text-white" />
+              </div>
+              <h3 className="font-semibold text-gray-800 text-sm arabic-text group-hover:text-purple-700 transition-colors duration-300">
+                حول التطبيق
+              </h3>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
     </div>
   );

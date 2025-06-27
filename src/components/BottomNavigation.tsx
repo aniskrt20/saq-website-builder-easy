@@ -1,110 +1,58 @@
 
 import React from "react";
+import { Card } from "@/components/ui/card";
+import { Home, Settings, Headphones, BookOpen, Sparkles } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Radio, Scroll, Settings, BookOpen } from "lucide-react";
 
 const BottomNavigation = () => {
   const location = useLocation();
-
-  const isActive = (path: string) => {
-    // More precise check to avoid '/' matching every path
-    return location.pathname === path || (path !== '/' && location.pathname.startsWith(`${path}/`));
-  };
-
+  
   const navItems = [
-    {
-      path: "/",
-      icon: Home,
-      label: "الرئيسية",
-      color: "from-emerald-500 to-teal-600",
-      isMainHome: true
-    },
-    {
-      path: "/quran",
-      icon: BookOpen,
-      label: "المصحف",
-      color: "from-blue-500 to-indigo-600",
-      isMainHome: false
-    },
-    {
-      path: "/adhkar",
-      icon: Scroll,
-      label: "الأذكار",
-      color: "from-purple-500 to-violet-600",
-      isMainHome: false
-    },
-    {
-      path: "/radio",
-      icon: Radio,
-      label: "الإذاعات",
-      color: "from-orange-500 to-red-600",
-      isMainHome: false
-    },
-    {
-      path: "/settings",
-      icon: Settings,
-      label: "الإعدادات",
-      color: "from-gray-500 to-slate-600",
-      isMainHome: false
-    }
+    { icon: Home, label: "الرئيسية", path: "/" },
+    { icon: BookOpen, label: "الأذكار", path: "/adhkar" },
+    { icon: Sparkles, label: "التسبيح", path: "/tasbih" },
+    { icon: Headphones, label: "الإذاعة", path: "/radio" },
+    { icon: Settings, label: "الإعدادات", path: "/settings" }
   ];
 
   return (
-    <div className="fixed bottom-4 inset-x-4 z-50 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2">
-      <div
-        className="w-full max-w-md mx-auto bg-white/80 dark:bg-gray-950/80 backdrop-blur-2xl rounded-full shadow-2xl shadow-gray-900/10 dark:shadow-black/30 border border-white/30 dark:border-gray-800/50"
-      >
-        <div className="flex justify-around items-center px-2 py-2">
-          {navItems.map((item) => {
+    <div className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4">
+      <Card className="bg-white/90 backdrop-blur-xl border-0 shadow-2xl rounded-2xl overflow-hidden">
+        <div className="flex items-center justify-around p-2">
+          {navItems.map((item, index) => {
+            const isActive = location.pathname === item.path;
             const Icon = item.icon;
-            // This logic correctly identifies the active tab, including the special case for the home page.
-            const active = item.isMainHome
-              ? location.pathname === "/"
-              : isActive(item.path);
             
-            // A simple way to get the primary text color from the gradient classes
-            const fromColorClass = item.color.split(" ")[0]; // e.g., "from-emerald-500"
-            const textColorClass = fromColorClass.replace("from-", "text-"); // e.g., "text-emerald-500"
-
             return (
               <Link
-                key={item.path}
+                key={index}
                 to={item.path}
-                className="group relative flex flex-col items-center justify-center w-14 h-14 sm:w-16 sm:h-16 text-center transition-all duration-300 rounded-full"
+                className={`flex flex-col items-center justify-center p-3 rounded-xl transition-all duration-300 min-w-[60px] group ${
+                  isActive 
+                    ? "bg-gradient-to-t from-purple-500 to-pink-500 shadow-lg scale-105" 
+                    : "hover:bg-gray-100"
+                }`}
               >
-                <div
-                  className={`flex flex-col items-center justify-center transition-all duration-300 transform-gpu ${
-                    active ? "-translate-y-2" : "translate-y-0"
-                  }`}
-                >
-                  <div
-                    className={`flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-full transition-all duration-300 transform-gpu ${
-                      active
-                        ? `bg-gradient-to-br ${item.color} text-white shadow-md scale-110`
-                        : "text-gray-500 dark:text-gray-400 group-hover:bg-gray-200/60 dark:group-hover:bg-gray-800/60"
-                    }`}
-                  >
-                    <Icon
-                      size={16}
-                      className="transition-transform duration-300 group-hover:scale-110"
-                    />
-                  </div>
-
-                  <span
-                    className={`text-xs mt-1 sm:mt-1.5 font-semibold arabic-text transition-all duration-300 ${
-                      active
-                        ? `opacity-100 ${textColorClass} dark:text-white/90`
-                        : "opacity-100 text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300"
-                    }`}
-                  >
-                    {item.label}
-                  </span>
-                </div>
+                <Icon 
+                  size={20} 
+                  className={`transition-colors duration-300 ${
+                    isActive 
+                      ? "text-white" 
+                      : "text-gray-600 group-hover:text-purple-600"
+                  }`} 
+                />
+                <span className={`text-xs font-medium mt-1 transition-colors duration-300 ${
+                  isActive 
+                    ? "text-white" 
+                    : "text-gray-600 group-hover:text-purple-600"
+                }`}>
+                  {item.label}
+                </span>
               </Link>
             );
           })}
         </div>
-      </div>
+      </Card>
     </div>
   );
 };
