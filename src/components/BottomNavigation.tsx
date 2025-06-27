@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Card } from "@/components/ui/card";
-import { Home, Settings, Headphones, BookOpen, Sparkles } from "lucide-react";
+import { Home, Settings, Headphones, BookOpen, Sparkles, Book } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 const BottomNavigation = () => {
@@ -9,9 +9,9 @@ const BottomNavigation = () => {
   
   const navItems = [
     { icon: Home, label: "الرئيسية", path: "/" },
+    { icon: Book, label: "المصحف", path: "/quran" },
     { icon: BookOpen, label: "الأذكار", path: "/adhkar" },
     { icon: Sparkles, label: "التسبيح", path: "/tasbih" },
-    { icon: Headphones, label: "الإذاعة", path: "/radio" },
     { icon: Settings, label: "الإعدادات", path: "/settings" }
   ];
 

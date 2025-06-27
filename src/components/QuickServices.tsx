@@ -10,11 +10,19 @@ import {
   PlayCircle,
   Sparkles,
   BookOpen,
-  Compass
+  Compass,
+  Book
 } from "lucide-react";
 
 const QuickServices = () => {
   const services = [
+    {
+      title: "المصحف الشريف",
+      description: "القرآن الكريم كاملاً مع التلاوة",
+      icon: <Book className="w-6 h-6" />,
+      link: "/quran",
+      color: "from-emerald-500 to-green-500"
+    },
     {
       title: "التسبيح الرقمي",
       description: "عداد تسبيح إلكتروني",

@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,6 +14,7 @@ import HadithPage from "./pages/HadithPage";
 import AboutPage from "./pages/AboutPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import CopyrightPage from "./pages/CopyrightPage";
+import FullQuranPage from "./pages/FullQuranPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +31,7 @@ const App = () => (
           <Route path="/tasbih" element={<TasbihPage />} />
           <Route path="/adhkar" element={<AdhkarPage />} />
           <Route path="/duas" element={<DuasPage />} />
+          <Route path="/quran" element={<FullQuranPage />} />
           <Route path="/radio" element={<RadioPage />} />
           <Route path="/videos" element={<VideosPage />} />
           <Route path="/hadith" element={<HadithPage />} />
