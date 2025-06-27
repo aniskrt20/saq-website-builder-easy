@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { ChevronLeft, ChevronRight, Play, Pause, Volume2 } from 'lucide-react';
 import { useQuranApi } from '@/hooks/useQuranApi';
 import { toast } from 'sonner';
@@ -25,6 +24,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
 }) => {
   const [isFlipping, setIsFlipping] = useState(false);
   const [playingAyah, setPlayingAyah] = useState<number | null>(null);
+  const [audioLoading, setAudioLoading] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   
   const { 
@@ -36,10 +36,12 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
   } = useQuranApi();
 
   useEffect(() => {
+    console.log('Loading surah:', surah);
     getSurahByNumber(surah);
-  }, [surah]);
+  }, [surah, getSurahByNumber]);
 
   const handlePageFlip = (direction: 'next' | 'prev') => {
+    console.log('Page flip:', direction, 'current page:', page);
     setIsFlipping(true);
     
     setTimeout(() => {
@@ -53,6 +55,8 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
   };
 
   const playAyah = async (ayahNumber: number) => {
+    console.log('Playing ayah:', ayahNumber, 'with reciter:', reciter);
+    
     try {
       if (playingAyah === ayahNumber) {
         // إيقاف التشغيل
@@ -63,20 +67,53 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
         return;
       }
 
+      setAudioLoading(true);
       const audioUrl = getAyahAudioUrl(reciter, ayahNumber);
+      console.log('Audio URL:', audioUrl);
       
       if (audioRef.current) {
         audioRef.current.src = audioUrl;
-        audioRef.current.play();
-        setPlayingAyah(ayahNumber);
+        
+        // معالجة أحداث الصوت
+        audioRef.current.onloadstart = () => {
+          console.log('Audio loading started');
+        };
+        
+        audioRef.current.oncanplay = () => {
+          console.log('Audio can play');
+          setAudioLoading(false);
+          audioRef.current?.play();
+          setPlayingAyah(ayahNumber);
+        };
         
         audioRef.current.onended = () => {
+          console.log('Audio ended');
           setPlayingAyah(null);
         };
+        
+        audioRef.current.onerror = (e) => {
+          console.error('Audio error:', e);
+          setAudioLoading(false);
+          setPlayingAyah(null);
+          toast.error('فشل في تحميل الصوت، جاري المحاولة بمصدر آخر...');
+          
+          // محاولة مصدر صوتي آخر
+          setTimeout(() => {
+            if (audioRef.current) {
+              const fallbackUrl = `https://everyayah.com/data/Alafasy_128kbps/${ayahNumber.toString().padStart(6, '0')}.mp3`;
+              console.log('Trying fallback URL:', fallbackUrl);
+              audioRef.current.src = fallbackUrl;
+            }
+          }, 1000);
+        };
+        
+        // بدء التحميل
+        audioRef.current.load();
       }
     } catch (error) {
+      console.error('Error in playAyah:', error);
+      setAudioLoading(false);
       toast.error('فشل في تشغيل الآية');
-      console.error('Audio playback error:', error);
     }
   };
 
@@ -160,15 +197,18 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
                           variant="ghost"
                           onClick={() => playAyah(ayah.number)}
                           className="h-8 px-2 text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                          disabled={audioLoading}
                         >
-                          {playingAyah === ayah.number ? (
+                          {audioLoading && playingAyah === ayah.number ? (
+                            <div className="animate-spin w-3 h-3 border-2 border-amber-600 border-t-transparent rounded-full"></div>
+                          ) : playingAyah === ayah.number ? (
                             <Pause className="w-3 h-3" />
                           ) : (
                             <Play className="w-3 h-3" />
                           )}
                         </Button>
                         <span className="text-xs text-gray-500">
-                          استمع للآية
+                          {playingAyah === ayah.number ? 'جاري التشغيل...' : 'استمع للآية'}
                         </span>
                       </div>
                     )}
@@ -211,7 +251,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
       </div>
 
       {/* مشغل الصوت المخفي */}
-      <audio ref={audioRef} />
+      <audio ref={audioRef} preload="none" />
     </div>
   );
 };

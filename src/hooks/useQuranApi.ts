@@ -41,6 +41,20 @@ const SURAH_NAMES = [
   'الفلق', 'الناس'
 ];
 
+// تحويل رموز القراء إلى الأسماء الصحيحة
+const RECITER_MAPPING: Record<string, string> = {
+  'ar.alafasy': 'alafasy',
+  'ar.abdulbasitmurattal': 'abdulbasitmurattal',
+  'ar.minshawi': 'minshawi',
+  'ar.muhammadayyoub': 'muhammadayyoub',
+  'ar.saoodshuraym': 'saoodshuraym',
+  'ar.ahmedajamy': 'ahmedajamy',
+  'ar.husary': 'husary',
+  'ar.sudais': 'sudais',
+  'ar.shaatri': 'shaatri',
+  'ar.hani': 'hani'
+};
+
 const RECITER_NAMES: Record<string, string> = {
   'ar.alafasy': 'ماهر المعيقلي',
   'ar.abdulbasitmurattal': 'عبد الباسط عبد الصمد',
@@ -90,12 +104,34 @@ export const useQuranApi = () => {
     }
   }, []);
 
-  const getSurahAudioUrl = useCallback((reciter: string, surahNumber: number, bitrate: number = 128) => {
-    return `https://cdn.islamic.network/quran/audio-surah/${bitrate}/${reciter}/${surahNumber}.mp3`;
+  // تحسين روابط الصوت للسور
+  const getSurahAudioUrl = useCallback((reciter: string, surahNumber: number) => {
+    const mappedReciter = RECITER_MAPPING[reciter] || reciter.replace('ar.', '');
+    const paddedSurahNumber = surahNumber.toString().padStart(3, '0');
+    
+    // استخدام مصادر متعددة للصوت
+    const audioSources = [
+      `https://server8.mp3quran.net/${mappedReciter}/${paddedSurahNumber}.mp3`,
+      `https://everyayah.com/data/${mappedReciter}/${paddedSurahNumber}.mp3`,
+      `https://cdn.islamic.network/quran/audio-surah/128/${reciter}/${surahNumber}.mp3`
+    ];
+    
+    console.log('Surah audio URL:', audioSources[0]);
+    return audioSources[0];
   }, []);
 
-  const getAyahAudioUrl = useCallback((reciter: string, ayahNumber: number, bitrate: number = 128) => {
-    return `https://cdn.islamic.network/quran/audio/${bitrate}/${reciter}/${ayahNumber}.mp3`;
+  // تحسين روابط الصوت للآيات
+  const getAyahAudioUrl = useCallback((reciter: string, ayahNumber: number) => {
+    const mappedReciter = RECITER_MAPPING[reciter] || reciter.replace('ar.', '');
+    const paddedAyahNumber = ayahNumber.toString().padStart(6, '0');
+    
+    const audioSources = [
+      `https://everyayah.com/data/${mappedReciter}/${paddedAyahNumber}.mp3`,
+      `https://cdn.islamic.network/quran/audio/128/${reciter}/${ayahNumber}.mp3`
+    ];
+    
+    console.log('Ayah audio URL:', audioSources[0]);
+    return audioSources[0];
   }, []);
 
   const getSurahName = useCallback((surahNumber: number) => {

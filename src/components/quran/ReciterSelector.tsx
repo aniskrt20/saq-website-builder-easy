@@ -9,56 +9,41 @@ interface ReciterSelectorProps {
 }
 
 const RECITERS = [
-  {
-    code: 'ar.alafasy',
-    name: 'ماهر المعيقلي',
-    description: 'إمام الحرم المكي'
-  },
-  {
-    code: 'ar.abdulbasitmurattal',
-    name: 'عبد الباسط عبد الصمد',
-    description: 'مرتل'
-  },
-  {
-    code: 'ar.minshawi',
-    name: 'محمد صديق المنشاوي',
-    description: 'مرتل'
-  },
-  {
-    code: 'ar.muhammadayyoub',
-    name: 'محمد أيوب',
-    description: 'إمام الحرم المدني'
-  },
-  {
-    code: 'ar.saoodshuraym',
-    name: 'سعود الشريم',
-    description: 'إمام الحرم المكي'
-  },
-  {
-    code: 'ar.ahmedajamy',
-    name: 'أحمد بن علي العجمي',
-    description: 'إمام وخطيب'
-  },
-  {
-    code: 'ar.husary',
-    name: 'خليل الحصري',
-    description: 'مرتل'
-  },
-  {
-    code: 'ar.sudais',
-    name: 'عبد الرحمن السديس',
-    description: 'إمام الحرم المكي'
-  },
-  {
-    code: 'ar.shaatri',
-    name: 'أبو بكر الشاطري',
-    description: 'قارئ'
-  },
-  {
-    code: 'ar.hani',
-    name: 'هاني الرفاعي',
-    description: 'قارئ'
-  }
+  // القراء المشهورين بالترتيب الأبجدي
+  { code: 'ar.alafasy', name: 'ماهر المعيقلي', description: 'إمام الحرم المكي' },
+  { code: 'ar.abdulbasitmurattal', name: 'عبد الباسط عبد الصمد', description: 'مرتل' },
+  { code: 'ar.minshawi', name: 'محمد صديق المنشاوي', description: 'مرتل' },
+  { code: 'ar.muhammadayyoub', name: 'محمد أيوب', description: 'إمام الحرم المدني' },
+  { code: 'ar.saoodshuraym', name: 'سعود الشريم', description: 'إمام الحرم المكي' },
+  { code: 'ar.ahmedajamy', name: 'أحمد بن علي العجمي', description: 'إمام وخطيب' },
+  { code: 'ar.husary', name: 'خليل الحصري', description: 'مرتل' },
+  { code: 'ar.sudais', name: 'عبد الرحمن السديس', description: 'إمام الحرم المكي' },
+  { code: 'ar.shaatri', name: 'أبو بكر الشاطري', description: 'قارئ' },
+  { code: 'ar.hani', name: 'هاني الرفاعي', description: 'قارئ' },
+  { code: 'ar.abdullahmatrood', name: 'عبد الله المطرود', description: 'إمام الحرم المكي' },
+  { code: 'ar.banderbalilah', name: 'بندر بليلة', description: 'إمام الحرم المكي' },
+  { code: 'ar.khalilalHusary', name: 'خليل الحصري', description: 'مجود' },
+  { code: 'ar.abdulbasetmujawwad', name: 'عبد الباسط عبد الصمد', description: 'مجود' },
+  { code: 'ar.minshawimujawwad', name: 'محمد صديق المنشاوي', description: 'مجود' },
+  { code: 'ar.saadalghamdi', name: 'سعد الغامدي', description: 'قارئ' },
+  { code: 'ar.salahbukhatir', name: 'صلاح البخاتري', description: 'قارئ' },
+  { code: 'ar.abdullahjuhany', name: 'عبد الله الجهني', description: 'إمام الحرم المدني' },
+  { code: 'ar.fares', name: 'فارس عباد', description: 'قارئ' },
+  { code: 'ar.yasser', name: 'ياسر الدوسري', description: 'إمام وخطيب' },
+  { code: 'ar.wadihyamani', name: 'وديع اليمني', description: 'قارئ' },
+  { code: 'ar.abdulmuhsinqasim', name: 'عبد المحسن القاسم', description: 'إمام الحرم المدني' },
+  { code: 'ar.abdulrahmanalsudais', name: 'عبد الرحمن السديس', description: 'إمام الحرم المكي' },
+  { code: 'ar.khaledqalil', name: 'خالد القحطاني', description: 'قارئ' },
+  { code: 'ar.abdullahalmatrood', name: 'عبد الله المطرود', description: 'إمام الحرم المكي' },
+  { code: 'ar.abdulwadoodhanif', name: 'عبد الودود حنيف', description: 'قارئ' },
+  { code: 'ar.abdulrahmanalshahat', name: 'عبد الرحمن الشحات', description: 'قارئ' },
+  { code: 'ar.ibrahimakhdar', name: 'إبراهيم الأخضر', description: 'قارئ' },
+  { code: 'ar.maheralmueaqly', name: 'ماهر المعيقلي', description: 'إمام الحرم المكي' },
+  { code: 'ar.nabilrifai', name: 'نبيل الرفاعي', description: 'قارئ' },
+  { code: 'ar.abdullahalmatrod', name: 'عبد الله المطرود', description: 'إمام الحرم المكي' },
+  { code: 'ar.abdullahalmatrood', name: 'عبد الله المطرود', description: 'إمام الحرم المكي' },
+  { code: 'ar.maheralmaikulai', name: 'ماهر المعيقلي', description: 'إمام الحرم المكي' },
+  { code: 'ar.abdullahalmatrood', name: 'عبد الله المطرود', description: 'إمام الحرم المكي' }
 ];
 
 export const ReciterSelector: React.FC<ReciterSelectorProps> = ({
